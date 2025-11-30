@@ -1,0 +1,2533 @@
+%===============================================
+%   rhnotes.tex -- Framework for RH-coding Notes
+%===============================================
+\documentclass[11pt,a4paper]{article}
+
+%----- ENHANCED TYPOGRAPHY -----
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage{lmodern}        % clean vector font
+\usepackage{microtype}      % better justification & kerning
+\usepackage{palatino} 
+\usepackage{braket}    % Palatino for text & math
+
+%----- PAGE LAYOUT -----
+\usepackage{geometry}
+\geometry{top=1in, bottom=1in, left=1in, right=1in}
+\usepackage{setspace}
+\onehalfspacing  % 1.5 line spacing
+
+%----- FANCY HEADERS & FOOTERS -----
+\usepackage{fancyhdr}
+\pagestyle{fancy}
+\fancyhf{}
+% page number outside, header text inside
+\fancyhead[LE]{\small Georges Khater}
+\fancyhead[RE]{\small Notes on RH-coding}
+\fancyhead[LO]{\small \rightmark}
+\fancyhead[RO]{\small \leftmark}
+\renewcommand{\headrulewidth}{0.4pt}
+\renewcommand{\footrulewidth}{0pt}
+
+% make sections feed into \leftmark/\rightmark
+\renewcommand{\sectionmark}[1]{\markboth{#1}{}}
+\renewcommand{\subsectionmark}[1]{\markright{#1}}
+
+%----- SECTION NUMBERING & TOC DEPTH -----
+\setcounter{secnumdepth}{3}  % number down to \subsubsection
+\setcounter{tocdepth}{2}     % show ToC down to \subsection
+
+%----- AMS MATH & THEOREM STYLES -----
+\usepackage{amsmath,amssymb,mathtools}
+\usepackage{amsthm}
+
+% definitions, examples, remarks upright
+\theoremstyle{definition}
+\newtheorem{definition}{Definition}[section]
+\newtheorem{example}[definition]{Example}
+\newtheorem{remark}[definition]{Remark}
+
+% theorems, lemmas, corollaries italic
+\theoremstyle{plain}
+\newtheorem{theorem}[definition]{Theorem}
+\newtheorem{lemma}[definition]{Lemma}
+\newtheorem{proposition}[definition]{Proposition}
+\newtheorem{corollary}[definition]{Corollary}
+
+% unnumbered proof environment
+\theoremstyle{remark}
+
+%----- OTHER PACKAGES -----
+\usepackage{graphicx}
+\usepackage{tikz}
+\usetikzlibrary{calc, matrix, decorations.pathreplacing, positioning}
+\usepackage{tikz-cd}
+\usepackage{hyperref}
+\hypersetup{colorlinks,
+linkcolor=blue, citecolor=purple, urlcolor=teal}
+\usepackage{enumitem}
+\setlist[itemize]{nosep, left=1.5em}
+\usepackage{booktabs}
+\usepackage{listings}
+\lstset{
+basicstyle=\ttfamily\small,
+numbers=left,
+numbersep=5pt,
+frame=single,
+breaklines=true
+}
+\usepackage{xcolor}
+\definecolor{shade}{HTML}{F5F5F5}
+\usepackage{float}
+%----- CUSTOM MACROS -----
+\newcommand{\F}{\mathbb{F}}
+\newcommand{\code}[1]{\texttt{#1}}
+\newcommand{\bsc}{\mathrm{BSC}}
+\newcommand{\dist}[2]{d\bigl(#1,#2\bigr)}
+\newcommand{\R}{\mathbb{R}}
+\newcommand{\Z}{\mathbb{Z}}
+\newcommand{\N}{\mathbb{N}} 
+\newcommand{\Q}{\mathbb{Q}} 
+\renewcommand{\set}[1]{\left\{ #1 \right\}}
+\newcommand{\angles}[1]{\langle #1 \rangle}
+\newcommand{\abs}[1]{\lvert #1 \rvert}
+\newcommand{\norm}[1]{\lVert #1 \rVert} 
+
+% \usepackage{mathtools} 
+% \DeclarePairedDelimiter{\angles}{\langle}{\rangle} 
+% \DeclarePairedDelimiter{\braces}{\left\{}{\right\}} 
+% \DeclarePairedDelimiter{\abs}{\lvert}{\rvert} 
+% \DeclarePairedDelimiter{\norm}{\lVert}{\rVert}
+
+%----- TITLE METADATA -----
+\title{\LARGE\bfseries Topology I}
+\author{Georges Khater \\ \small American University of Beirut, Math 214}
+\date{\today}
+
+%===============================================
+\begin{document}
+\maketitle
+\tableofcontents
+\bigskip
+
+\section{Introduction}
+This course is a first course in point-set topology, which is the study of how points are "put together" in a set. This is an abstraction 
+of the notion of structure that we are used to in Euclidean spaces (dimension, distance, convergence, \dots). 
+
+\subsection{Motivating examples} 
+\begin{theorem} [Brouwer's fixed point theorem]
+    If we have an $n$-disk (closed disk) $D^n$ and a continuous function 
+    $$f \colon D^n \to D^n$$
+    Then $f$ has a fixed point (a point such that $f(x) = x$). 
+\end{theorem}
+Note: The shape here is not important, since the closed disk is equivalent to a closed rectangle for example. However, if we replace the disk by 
+a disk with a hole in the middle, then the example doesn't hold anymore; consider the map that just rotates by a non-zero angle. 
+Similarly, it is also important that the disk is closed (it includes its boundary). \\
+{\tiny \textit{There is a cute combinatorial proof of this theorem, which uses Sperner's lemma.}}
+
+\paragraph{Euler's identity}
+Consider a planar connected graph (edges don't intersect, graph is on a plane and is connected), and let $V, E, F$ be the number of vertices, faces, edges 
+respectively. Then 
+$$V - E + F = 2$$
+Note that if we draw the graph on a sphere instead of a plane, this still holds, but if we draw on a Torus, we get a different constant, view introduction drawing on Euler's identity. 
+
+\paragraph{Euclidean spaces} Here let $X = \mathbb{R}^d$, $d \in \{1, 2, 3, \cdots\}$. 
+$x_1, x_2, \cdots$ and $x_0$ points of $X$. 
+we say that $x_1, x_2, \cdots$ converges to $x$ iff 
+$$\forall \varepsilon > 0, \, \exists n_0, \quad \forall n \geq n_0, \ d(x_n, x) < \varepsilon$$
+i.e $x_n \in B_\varepsilon (x)$. 
+Equivalently, for every open set $x \in U$, $\exists n_0$ $\forall n \geq n_0, \ x_n \in U$. 
+
+Let $f \colon \R^d \to \R^d$, we say that $f$ is continuous iff $\forall \varepsilon > 0$ $\exists \delta > 0$ s.t 
+$\forall x, x' \in \R^d$ we have 
+$$d(x, x') < \delta \implies d(f(x), f(x')) < \varepsilon$$
+i.e $f \left(B_\delta (x) \right) \subseteq B_\varepsilon (f(x))$. Equivalently, using sequences: 
+$$x_n \to x_0 \implies f(x_n) \to f(x_0)$$
+
+A set $U \subseteq \R^d$ is open iff 
+$$\forall x \in U \ \exists \varepsilon, \, B_\varepsilon(x) \subseteq U$$
+Conversely, a set is closed iff its complement is open. The closure of a set $A$ (denoted $\overline{A}$) is defined by 
+$$ A \to \overline{A} = \{x \in \R^d \colon \: \forall \varepsilon > 0, \, B_\varepsilon(x) \cap A \neq \emptyset\}$$ 
+The interior of the set $\mathring{A}$ is 
+$$A \to \mathring{A} = \{x \in \R^d \colon \: \exists \varepsilon, \, B_\varepsilon(x) \subseteq A\}$$
+
+\subsection{Generalization of Topology}
+A Topology is a set with a structure that allows us to discuss these kinds of concepts; We have a choice as in what to generalize (continuity, convergence, open balls / neighborhoods). 
+All of these were tried, some structures matched, some were more general than others. The popular modern approach is to generalize the concept of \emph{open sets}, i.e a topology can 
+be described by specifying which of its subsets are open, we call the set of all open sets $\mathcal{T} \subseteq \mathcal{P}(X)$. 
+
+\begin{definition}[Topological Space]
+    A \emph{Topological space} $(X, \mathcal{T})$ is a set $X$ equipped with a topology (family of open sets) $\mathcal{T} \subseteq \mathcal{P} (X)$ which 
+    respects the following axioms: 
+    \begin{itemize}
+        \item The union of any (arbitrary) collection of open sets is again open 
+        $$\forall S \subseteq \mathcal{T} \implies \bigcup_{A \in S} A \in \mathcal{T}$$
+        
+        \item The intersection of a finite collection of open sets is again open 
+        $$A_1, \cdots, A_n \subseteq \mathcal{T} \implies A_1 \cap \cdots \cap A_n \in \mathcal{T}$$
+
+        \item $\emptyset, X \in \mathcal{T}$
+    \end{itemize}
+    We say that a set $U \subseteq X$ is closed iff its complement is open.
+\end{definition}
+
+\begin{example}[Trivial and discrete Topologies]
+    Let $X \neq \emptyset$ be an arbitrary open set, let $\mathcal{T} = \{\emptyset, X\}$. Then 
+    $(X, \mathcal{T})$ is a valid topology (called the \emph{trivial topology}).  
+
+    Let $X \neq \emptyset$, and let $\mathcal{T} = \mathcal{P} (X)$. Then $(X, \mathcal{T})$ 
+    is a valid topology (called the \emph{discrete topology}). 
+\end{example}
+
+\begin{definition}[Convergence]
+    A sequence $x_1, x_2, \cdots$ in $X$ converges to a point $x \in X$ iff for every open set 
+    $U \ni x$, there exists $n_0$ s.t 
+    $$\forall n \geq n_0, \, x_n \in U$$
+\end{definition}
+
+\begin{definition}[Continuity]
+    Let $(X, \mathcal{T}), (Y, \mathcal{S})$ be topological spaces, then a function (mapping) 
+    $$f \colon \: X \to Y$$
+    is said to be continuous iff 
+    $$\forall U \in \mathcal{S}, \, f^{-1}(U) \in \mathcal{T}$$ 
+\end{definition}
+
+Notice that for example in the trivial topology, every sequence converges to every point; in particular in this 
+topology the limit of sequences is not unique. Similarly any $f$ that maps to a trivial topology must be continuous. \\
+Conversely, any $f$ maps from a discrete topology must be continuous. Moreover, convergence in this topology that the 
+sequence is eventually constant. \\
+Less obviously, Say we have $f \colon \R^d \to X$ (where $X$ is equipped with the trivial topology) then $f$ is constant 
+because the only clopen sets are the emptyset and $X$. 
+
+\begin{example}
+    Let $X = \{0,1\}$ and $\mathcal{T} = \{\emptyset, \{0\}, \{0,1\}\}$ is a valid topology. 
+\end{example}
+
+\begin{example}[The cofinite Topology]
+    Let $X \neq \emptyset$ be an arbitrary set, then $A \subseteq X$ is declared to be open iff 
+    \begin{itemize}
+        \item $X \setminus A$ is finite 
+        \item $A = \emptyset$
+    \end{itemize}  
+    This is a valid topology called the \emph{co-finite topology}. 
+
+    Here convergence means that for every finite set $U$ that doesn't contain $x$, $\exists n_0$ such that $\forall n \geq n_0$ 
+    $x_n \not \in U$. 
+
+    Continuity of a function $f \colon X \to X$ means that for every finite set $U$, its complement is finite. 
+\end{example}
+
+\subsection{Topological Basis} 
+This imitates the concept of open Balls in $\R^d$ (a set is open iff for every point in that set there is an open ball around 
+this point contained in this set). 
+
+\begin{definition}[Topological Basis]
+    A \emph{Topological Basis} on a set $X$ is a family $\mathcal{B} \subseteq 2^X$ s.t 
+    \begin{enumerate}
+        \item $\bigcup_{A \in \mathcal{B}} A = X$. 
+        \item If $x \in B_1 \cap B_2$, with $B_1, B_2 \in \mathcal{B}$, then there exists 
+        $B_3 \subseteq B_1 \cap B_2$ s.t $x \in B_3$. 
+    \end{enumerate}
+    The topology generated by a basis $\mathcal{B}$ is 
+    \begin{align*}
+        \mathcal{T} &= \mathcal{T (B)} \\
+        &= \left\{\bigcup_{A \in S} \colon \: S \subseteq \mathcal{B}\right\} \\
+        &= \{U \subseteq X \colon \: \forall x \in U, \, \exists B \in \mathcal{B} \text{ s.t } x \in A \subseteq U\}
+    \end{align*}
+\end{definition}
+
+
+\begin{definition}
+    The topology \emph{generated by} $\mathcal{B} \subseteq 2^X$ denoted 
+    \begin{align*}
+        \mathcal{T} &= \mathcal{T}(\mathcal{B}) = \set{\bigcup_{A \in S} \colon S \subseteq \mathcal{B}} \\
+        &= \set{U \subseteq \mathcal{X} \colon \forall x \in U, \, \exists B \in \mathcal{B} \text{ s.t } x \in B \subseteq U}
+    \end{align*}
+    Note that these two definitions are equivalent. 
+\end{definition}
+
+\begin{proposition}
+    If $B$ is a basis, then $\mathcal{T}(\mathcal{B})$ is a topology. 
+\end{proposition}
+
+\begin{example}
+    $X = \R^2$ where $\mathcal{B}_1 = \set{U \colon U \text{ is an open ball}}$, $\mathcal{T}_1 = \mathcal{T}(\mathcal{B}_1)$. We could also pick 
+    $\mathcal{B}_2 = \set{R \colon R \text{ is an open rectangle}}$, with $\mathcal{T}_2 = \mathcal{T}(\mathcal{B}_2)$. 
+    Look at the drawing 1 in Topological basis, then $\mathcal{T}_1 = \mathcal{T}_2$. This is because we can always draw an open rectangle within an open ball 
+    and vice versa.  
+\end{example}
+
+\begin{proposition}
+    Let $\mathcal{B}_1$ and $\mathcal{B}_2$ be two bases on a set $X$. Then 
+    $$\mathcal{T}(\mathcal{B}_1) \subseteq \mathcal{T}(\mathcal{B}_2)$$ 
+    if and only if $\forall x \in X$ and $\forall B_1 \in \mathcal{B}_1$ with $x \in B_1$, 
+    $$\exists B_2 \in \mathcal{B}_2 \text{ s.t } x \in B_2 \subseteq B_1$$
+
+    In this case we say that $\mathcal{T}_2$ is \emph{finer} than $\mathcal{T}_1$. Similarly we say that 
+    $\mathcal{T}_1$ is \emph{coarser} than $\mathcal{T}_2$. 
+\end{proposition}
+
+\begin{proposition}
+    Let $\mathcal{B} \subseteq 2^X$ be an arbitrary family. 
+    $$\mathcal{T} = \set{\bigcup_{A \in \mathcal{A}} A \colon \ \mathcal{A} \subseteq \mathcal{B}}$$
+    Then $\mathcal{T}$ is a topology iff $\mathcal{B}$ is a basis. 
+
+    Note: this is a characteristic property of bases. 
+\end{proposition}
+
+\begin{example}[Some topologies on $\R$]
+    \begin{itemize}
+        \item The family of open intervals generate the Euclidean topology on $\R$. 
+        (In general the family of open $n$-disks generate the Euclidean topology on $\R^n$). 
+
+        \item Let $X = \R$, $\mathcal{B}_l = \set{[a, b) \colon \: a, b \in \R}$ (which is a valid basis). This basis generates what we call 
+        the lower limit topology, the concept of convergence is unique and interesting here ($\varepsilon-\delta$ convergence from the right). 
+
+        \item Let $X = \R$, $\mathcal{B}_k = \set{(a, b) \colon \: a, b \in \R} \cup \set{(a, b) \setminus K \colon a, b \in \R}$ where $K = \set{1/n \colon \: n \in \Z^+}$. 
+    \end{itemize}
+\end{example}
+
+\begin{example}[Furstenberg Topology]
+    Let $X = \Z$, $\mathcal{B} = \set{\text{collection of all arithmetic progressions}}$. i.e the sets $\angles{n,k}$ of elements $n + k \cdot d$ for all $k \in \Z$, in other words 
+    for some $a, n \in Z$, $n \neq 0$ we have  
+    $$\mathcal{B}(a, n) = a + n \Z = \set{a + jn \colon j \in \Z}$$
+\end{example}
+
+\begin{example}
+    $X = \set{0,1}^{\Z^+}$, a point in $X$ is $x = x_1 x_2 \cdots$ (an infinite sequence of $0$s and $1$s),
+    we call these points \emph{configurations} of $0$s and $1$s. 
+
+    A \emph{word} of length $n$ is a finite sequence $w = w_1 w_2 \cdots w_n$, we allow $n = 0$ in which case we denote it by $\lambda$. 
+    We define the \emph{cylinder} of base $w$ to be
+    $$C(w) = \set{x \in X \colon \: x_1 \cdots x_n = w_1 \cdots w_n}$$ 
+    Note that $C(\lambda) = X$. 
+
+    Verify that the family of all cylinders form a basis on $X$. 
+\end{example}
+
+\begin{definition}
+    Let $X$ be a set: 
+    \begin{itemize}
+        \item A \emph{partial order} on $X$ is a relation $\sqsubseteq$ which satisfies 
+        \begin{enumerate}
+            \item Reflexivity: $\forall x \in X$ we have 
+            $$x \sqsubseteq x$$
+            
+            \item Antisymmetry: If $ a \sqsubseteq b$ and $b \sqsubseteq a$ then 
+            $$a = b$$
+
+            \item Transitiviy: If $a \sqsubseteq b$ and $b \sqsubseteq c$ then 
+            $$a \sqsubseteq c$$
+        \end{enumerate}
+
+        \item A \emph{Total order} on $X$ is a relation $\leq$ is a partial order in which every two elements are comparable, i.e 
+        $\forall a, b \in X$ we have that 
+        $$a \leq b \text{ or } b \leq a$$
+    \end{itemize}
+\end{definition}
+
+
+\begin{example}[Order Topology]
+   \begin{itemize}
+        \item  $X = \R^2$ and $\mathcal{B} \subseteq 2^X$ consists of all open intervals $(a, b) = \set{x \in X \colon \: a \sqsubset x \sqsubset b}$ where $a, b \in \R^2$
+        according to lexicographic order. Look at the drawing. Think about what convergence and continuity mean in this topology.
+    
+        \item More generally, let $(X, \sqsubseteq)$ be a totally ordered set, we can define a basis 
+        $$\mathcal{B} = \set{(a, b) \colon a, b \in X} \cup \set{[m, b) \colon m, b \in X, \ m = \min X} \cup \set{(a, M) \colon a, M \in X, \ M = \max X}$$
+        With 
+        $$(a, b) := \set{a \sqsubset x \sqsubset b}$$
+        
+        \item If we have a paritally ordered set, instead of look at the minimal / maximal elements instead of the minimum / maximum of $X$, note we would 
+        have to add to the basis (union) the set 
+        $$\set{[m , M] \colon \: m \text{ minimal }, \, M \text{ maximal}}$$ 
+   \end{itemize}
+\end{example}
+
+\paragraph{Different Topologies on $\R^d$} 
+
+View the picture 
+\begin{itemize}
+    \item \textbf{Discrete topology: } This is the finest possible topology. 
+    \item \textbf{Trivial topology: } This is the coarsest possible topology. 
+    \item \textbf{Euclidean topology} 
+    \item \textbf{Co-finite topology}
+\end{itemize}
+
+\begin{remark}
+    Let $\set{\mathcal{T}_i}_{i \in I}$ be a collection of topologies on a set $X$. Then 
+    $$\bigcap_{i \in I} \mathcal{T}_i \quad \text{is a valid topology}$$
+    Indeed, $\varnothing, X \in \mathcal{T}_i$ for all $i$, and arbitrary unions / finite intersections of sets that lie in every $\mathcal{T}_i$ still lie in every $\mathcal{T}_i$; hence they lie in $\bigcap_{i \in I} \mathcal{T}_i$. 
+\end{remark}
+
+\subsection{Topology generated by a set}
+Let $\mathcal{B} \subseteq 2^X$ be a basis, then 
+    $$ \mathcal{B} \to \mathcal{T} = \set{\bigcup_{A \in \mathcal{A}} A \colon \ \mathcal{A} \subseteq \mathcal{B}}$$
+We wish to generalize this to an arbitrary set $\mathcal{S}$. i.e we want to define 
+    $$\mathcal{S} \subseteq 2^X \to \mathcal{T}(\mathcal{S}) = \bigcap_{\substack{\hat{\mathcal{T}}\ \text{a topology on } X\\ \mathcal{S} \subseteq \hat{\mathcal{T}}}} \hat{\mathcal{T}}$$
+We know that the intersection is nonempty since we have at least the discrete topology. 
+
+\begin{lemma}
+    If $\mathcal{B} \subseteq 2^X$, then the two definitions of $\mathcal{T}(\mathcal{B})$ coincide. 
+\end{lemma}
+
+\begin{proof}
+    Let $\mathcal{T}_1 = \set{\bigcup_{A \in \mathcal{A}} A \colon \ \mathcal{A} \subseteq \mathcal{B}}$, and let $\mathcal{T}_2$ be the coarsest topology containing $\mathcal{B}$. 
+    \begin{itemize}
+        \item[($\mathcal{T}_1 \supseteq \mathcal{T}_2$)] This is clear because $\mathcal{T}_2$ is the coarsest topology 
+        containing $\mathcal{B}$ and $\mathcal{T}_1$ contains $\mathcal{B}$.
+
+        \item[($\mathcal{T}_1 \subseteq \mathcal{T}_2$)] Each element $\mathcal{O}$ of $\mathcal{T}_1$ is of the form 
+        $$\mathcal{O} = \bigcup_{A \in \mathcal{A}} A \quad \text{for some } \mathcal{A} \subseteq \mathcal{B}.$$
+        But $\mathcal{B} \subseteq \mathcal{T}_2$, hence $\mathcal{A} \subseteq \mathcal{T}_2$, therefore $\mathcal{O}$ is a union of 
+        open sets of $\mathcal{T}_2$ and hence it is open in $\mathcal{T}_2$. 
+    \end{itemize}
+\end{proof}
+
+\begin{lemma}
+    Let $\mathcal{S} \subseteq 2^X$ be arbitrary, then 
+    $$\mathcal{B}(\mathcal{S}) := \set{A_1 \cap \cdots \cap A_n \mid \ n \geq 0, \ A_1, \cdots, A_n \in \mathcal{S}}$$
+    is a basis. 
+\end{lemma}
+
+\begin{proposition}[Explicit characterisation of $\mathcal{T}(\mathcal{S})$]
+    \mbox{}\\
+    Let $\mathcal{S} \subseteq 2^X$ be arbitrary, then: 
+    \begin{enumerate}[label=(\roman*)]
+        \item $\mathcal{T}(\mathcal{S}) = \mathcal{T}(\mathcal{B}(\mathcal{S}))$. 
+        \item In particular, (and more explicitly): 
+        $$\mathcal{T}(\mathcal{S}) = \set{\text{all unions of finite intersections of elements of $\mathcal{S}$}}$$
+    \end{enumerate}    
+\end{proposition}
+
+\begin{definition}
+    A family of $\mathcal{S} \subseteq 2^X$ is called a \emph{subbasis of $X$} iff 
+    $$\bigcup_{A \in S} A = X$$
+\end{definition}
+
+\subsection{Product Topologies} 
+Let $(X, \tau_X), (Y, \tau_Y)$ be two topological spaces, then 
+$$\mathcal{B} = \set{U \times V \colon U \in \tau_X, \ V \in \tau_Y}$$
+is a basis on the product on $X \times Y$.     
+
+\begin{definition}
+    The \emph{product topology} or \emph{box topology} is the topology generated by $\mathcal{B}$ defined above. \\
+    Note for later that box and product topologies do not coincide for an infinite product of spaces; they do coincide for finite products. 
+    for finite product of spaces. 
+\end{definition}
+
+\begin{proposition}[A simpler basis]
+    $B_X$ is a basis for $(X, \tau_X)$ and $B_Y$ a basis for $(Y, \tau_Y)$. Then 
+    $$B_{X \times Y} := \set{A \times B \colon A \in B_X, \, B \in B_Y}$$ 
+    is a basis for the product topology on $X \times Y$.  
+\end{proposition}
+
+\begin{remark}
+    $$S := \set{U \times Y \colon \: U \in \tau_X} \cup \set{X \times V \colon \: V \in \tau_Y}$$
+    is a sub-basis for the product topology. 
+\end{remark}
+
+\subsection{Convergence and Continuity in terms of Bases and Sub-bases}
+\paragraph{Convergence: } Let $(X, \tau)$ be a topological space. 
+\begin{enumerate}
+    \item Suppose $B$ is a basis for $\tau$; then 
+    $$x_1, x_2, \cdots \to x \text{ in } \tau \iff \forall A \in B \ \exists n_0 \ \forall n \geq n_0 \ x_n \in A$$
+    i.e we only need to check for elements of the basis containing $x$. 
+
+    \item Suppose $S$ is a sub-basis for $\tau$; then 
+    $$x_1, x_2, \cdots \to x \text{ in } \tau \iff \forall A \in S \ \exists n_0 \ \forall n \geq n_0 \ x_n \in A$$
+    This is true by taking a finite intersection of such $A$'s and taking the maximum $n$ over all these sets; then use (1). 
+\end{enumerate} 
+
+\paragraph{Continuity: } Let $(X, \tau_X)$, $(Y, \tau_Y)$ be topological spaces and $f \colon X \to Y$ a map: 
+\begin{enumerate}
+    \item Suppose $B_Y$ is a basis for $\tau_Y$. Then $f$ is continuous iff 
+    $$\forall B \in B_Y, \ f^{-1}(B) \in \tau_X$$
+    (This comes from the fact that preimage behaves nicely with union)
+    
+    \item Similarly, let $S_Y$ be a subbasis for $\tau_Y$, then $f$ is continuous iff 
+    $$\forall S \in S_y, \ f^{-1}(S) \in \tau_X$$
+    (This comes from the fact that preimages are behave nicely with intersections)
+\end{enumerate} 
+
+\subsection{Topological Subspaces}  
+Sometimes we want to view subsets of our topological spaces as spaces of their own, in a way such that they "inherit" the original space's construction. 
+Think of $[a, b] \subseteq \R$, $\Q \subset \R$, $[a, b] \times [c, d] \subset \R^2$ or even $S^d \subset \R^{d+1}$ where 
+$$S^d = \set{x \in \R^{d+1} \mid \norm{x } = 1} \quad \text{ is the $d$ dimensional sphere}$$
+
+\begin{definition}
+    Let $(X, \tau)$ be a topological space, and $Y \subseteq X$. Then we define the \emph{subspace topology} or 
+    \emph{relative topology} $\tau_Y$ on $Y$ where 
+    $$\tau_Y = \set{A \cap Y \colon \ A \in \tau}$$
+\end{definition}
+
+\begin{proposition}
+    Let $X, Y$ be topological spaces and $X' \subseteq X$ and $Y' \subseteq Y$, then the following two topologies on $X' \times Y'$ are equivalent: 
+    \begin{itemize}
+        \item The product topology $X' \times Y'$ where $X'$ and $Y'$ are given the subspace topology. 
+        \item The subspace topology inherited from $X \times Y$. 
+    \end{itemize} 
+\end{proposition}
+
+\begin{example}
+    The proposition above says that in the case of $[a, b] \times [c, d]$ it doesn't matter if we take it as a subspace of $\R^2$ or as the product of two 
+    subspaces of $\R$. 
+\end{example}
+
+\begin{example}[Basis for a subspace] 
+    \begin{itemize}
+        \item Let $X = \R$ and $B$ be the basis of open intervals of $\R$; let $Y = [a, b]$. Then we get a natural basis 
+        $$B_Y = \set{(c, d) \mid \ a \leq c < d \leq b} \cup \set{[a, d) \mid \ a < c \leq b} \cup \set{(c, b] \mid a \leq c < b} \cup \set{[a, b]}$$
+        
+        \item If $X = \R^2$ and $B$ is the set of open balls, then $B_Y$ is the set of all open arcs. 
+    \end{itemize}
+\end{example}
+
+\subsection{Closure, Interior, Boundary, Limits, etc.}
+
+\begin{definition}[Neighborhoods]
+    \begin{itemize}
+        \item An \emph{open neighborhood} of $X$ in a space $X$ is an open set $U \ni x$.
+        \item A \emph{neighborhood} of $X$ is a set $V$ that contains an open neighborhood of $x$ (so $x \in \mathring{V}$). 
+    \end{itemize}
+\end{definition}
+
+\begin{definition}[Closure of a set]
+    Let $E \subseteq X$, then we define the \emph{closure} of $E$ to be
+    $$\operatorname{cl} (E) = \overline{E} := \set{x \in X \mid \ \forall U \ni x \text{ open }, \ E \cap U \neq \emptyset}$$
+    Equivalently, 
+    $$\overline{E} := \bigcap_{C \text{ closed s.t } E \subseteq C} C$$
+    (Exercise: show the equivalence; use complements / contrapositives.)
+\end{definition}
+
+\begin{definition}[Interior of a set]
+    Let $E \subseteq X$, then we define the \emph{interior} of $E$ to be 
+    $$\mathring{E} := \set{x \in X \colon \: \exists N \ni x \text{ open s.t } N \subseteq E}$$
+    Equivalently, 
+    $$\mathring{E} := \bigcup_{B \subseteq E \text{ s.t } B \text{ open}} B$$
+\end{definition}
+
+\paragraph{Some basic properties} 
+\begin{enumerate}[label = (\roman*)]
+    \item $\mathring{E} \subseteq E \subseteq \overline{E}$ 
+    \item $\overline{(\overline{E})} = \overline{E}$
+    \item $A \subseteq B \implies \overline{A} \subseteq \overline{B}$
+    \item $\overline{A \cup B}$ = $\overline{A} \cup \overline{B}$ 
+    \item $\overline{\emptyset} = \emptyset$ 
+    \item $E$ closed $\iff \overline{E} = E$
+    \item $X \setminus \mathring{E} = \overline{(X \setminus E)}$
+    \item $X \setminus \overline{E} = \operatorname{int} (X \setminus E)$
+\end{enumerate}
+Try to prove these, $(iv)$ is the most subtle, note that this isn't true for the complement, take $A = \Q$, $B = \R$, also note that this isn't true 
+for the infinite case; consider the singletons $\set{1/n}_{n \in \N}$. 
+
+\begin{definition}[Boundary of a set]
+    Let $E \subseteq X$, then the \emph{boundary} of $E$ is 
+    $$\partial E := \overline{E} \setminus \mathring{E} = \overline{E} \cap \overline{(X \setminus E)}$$
+    Equivalently: 
+    $$\partial E = \set{x \in X \colon \ \forall N \ni x \text{ open},\ N \cap E \neq \emptyset \text{ and } N \cap E^c \neq \emptyset}$$
+\end{definition}
+
+\begin{proposition}
+    \begin{itemize}
+        \item $\mathring{E} \cap \partial E = \emptyset$ 
+        \item $\partial E = \emptyset \iff E \text{ is clopen}$
+        \item $\overline{E} = \mathring{E} \cup \partial E$ 
+        \item $\partial (\partial E) \subseteq \partial E$ 
+        \item $\partial E = \partial (X \setminus E)$ 
+    \end{itemize}
+\end{proposition}
+
+\begin{definition}
+    \begin{itemize}
+        \item A point $x \in E$ is said to be an \emph{isolated point of $E$} iff there exists a neighborhood of $N \ni x$ s.t 
+        $$N \cap E = \set{x}$$
+        We note 
+        $$\operatorname{isolated} (E): \text{ set of isolated points of $E$}$$
+
+        \item $x \in X$ is a l\emph{limit point of $E$} iff $\forall N \ni x$ 
+        $$(N \setminus \set{x}) \cap E \neq \emptyset$$
+        We note 
+        $$\operatorname{lim}(E): \text{ set of limit points of $E$}$$
+    \end{itemize}
+\end{definition}
+
+\begin{proposition}
+    \begin{align*}
+        \overline{E} &= \operatorname{Lim}(E) \sqcup \operatorname{isolated} (E) \\
+        &= \operatorname{Lim} (E) \cup E
+    \end{align*}
+\end{proposition}
+
+\begin{proposition}
+    $x$ is the limit of a sequence in $E$, then $x \in \overline{E}$. \\
+    Likewise, $x$ is the limit of a sequence in $E \setminus \set{x} \implies x \in \operatorname{lim} (E)$. 
+\end{proposition}
+
+\begin{example}
+    Let $X = [-2, 2) \cup \set{3}$ with the subspace topology inherited from $\R$, let $E = (-1, 0) \cup (0, 1] \cup \set{-2, 3}$. 
+    $$\overline{E} = [-1, 1] \cup \set{-2, 3}, \quad \mathring{E} = (-1, 0) \cup (0, 1) \cup \set{3}$$
+    $$\operatorname{isolated} (E) = \set{-2, 3}, \quad \operatorname{Lim} (E) = [-1, 1]$$
+    And 
+    $$\overline{X \setminus E} = [-2, -1] \cup \set{0} \cup [1, 2), \quad \operatorname{int}({X \setminus E}) = (-2, -1) \cup (1, 2)$$
+    $$\operatorname{isolated} (X \setminus E) = \set{0}, \quad \operatorname{lim} (X \setminus E) = [-2, -1] \cup [1, 2)$$
+    And the boundary is the same 
+    $$\partial E = \partial X \setminus E = \set{-2, -1, 0, 1}$$
+\end{example}
+
+\begin{definition}
+    A set $D \subseteq X$ is said to be \emph{dense} if and only if
+    $$ \overline{D} = E$$
+    Similarly, a set $D$ is \emph{dense in $E \subseteq X$} iff 
+    $$\overline{D \cap E} \supseteq E$$
+\end{definition}
+
+\begin{proposition}
+    $D \subseteq X$ is said to be dense iff $\forall$ open $U \subseteq X$, $U \neq \emptyset$, 
+    $$U \cap D \neq \emptyset$$
+    Furthermore, if $\mathcal{B}$ is a basis for $\tau_X$, then $D \subseteq X$ is dense iff $\forall B \in \mathcal{B}$, $B \neq \emptyset$, 
+    $$B \cap D \neq \emptyset$$
+    However we don't have a similar characterization in terms of sub-basis (Take the normal sub-basis of $\R$ and compare with $\Z$). 
+\end{proposition}
+
+\section{Functions of Topological spaces} 
+
+\subsection{Continuous functions} 
+Let $f \colon X \to Y$ be a map between two topological spaces, $X$ and $Y$. Then the following are equivalent: 
+\begin{enumerate}
+    \item $\forall$ open $U \subseteq Y$, $f^{-1} (U)$ is open. 
+    \item $\forall$ closed $V \subseteq Y$, $f^{-1} (V)$ is closed. 
+    \item $\forall E \subseteq X$, $f(\overline{E}) \subseteq f(\overline{E})$. 
+    \item $f$ is continuous at every point $x \in X$, i.e $\forall B \ni f(x)$ open, $\exists A \ni x$ open such that 
+    $$f(A) \subseteq B$$
+\end{enumerate}
+
+\begin{proof}
+    We will show that $2 \iff 3$: 
+    \begin{itemize}
+        \item[$\implies$] Let $E \subseteq X$, let $V = \overline{f(E)}$. By $2$, we have that 
+        $$f^{-1}(V) \text{ is closed in $X$}$$
+        But $f^{-1} (V) \supseteq E$, and since it is closed, by definition of the closure 
+        $$f^{-1} (V) \supseteq \overline{E}$$
+        Hence, 
+        $$f(\overline{E}) \subseteq V = \overline{f(E)}$$
+
+        \item[$\impliedby$] Let $V \subseteq Y$ closed, then $V = \overline{V}$. Now consider 
+        $$U := f^{-1}(V) \subseteq X$$
+        By $3$, we have that 
+        $$f(\overline{U}) \subseteq \overline{f(U)} = \overline{V} = V$$
+        Therefore 
+        $$\overline{U} \subseteq f^{-1} (V) = U$$
+        Hence 
+        $$\overline{U} = U \implies \text{$U$ is closed}$$  
+    \end{itemize}
+\end{proof}
+
+\begin{remark}
+    For general topological spaces, the sequential definition of the limit does not hold; we only have 
+    $$f \text{ is continuous} \implies \left(\forall x_n \in X, \ x \in \R: \colon x_n \to x \implies f(x_n) \to f(x)\right)$$
+    The converse is true for \emph{metrizable} spaces, for huge spaces we might need to generalize to nets instead of sequences. 
+\end{remark}
+
+\begin{definition}[Homeomorphism]
+    A map $f \colon X \to Y$ is called a \emph{homeomorphism} if 
+    \begin{itemize}
+        \item $f$ is bijective. 
+        \item $f$ and $f^{-1}$ are continuous. 
+    \end{itemize}
+\end{definition}
+
+\subsection{Hausdorff Spaces} 
+
+\begin{definition}
+    A topological space is called \emph{Hausdorff} iff for every $a, b \in X$ $a \neq b$, there exists two neighborhoods $A \ni a, \ B \ni b$ s.t 
+    $$A \cap B = \emptyset$$
+\end{definition}
+
+\begin{example}
+    \begin{itemize}
+        \item $\R^d$, in fact every metrizable space is Hausdorff. 
+        \item $\set{0,1}^\N$ with the topology generated by cylinders is Hausdorff. Take 
+        $$x_1 x_2 \cdots , \ y_1 y_2 \cdots \in \set{0, 1}^\N$$
+        Let $n$ be the first index s.t $x_n \neq y_n$, then 
+        $$x \in [x_1 x_2 \cdots x_n], \ y \in [y_1 \cdots y_n]$$
+        Which are distinct (in fact this space turns out to be metrizable). 
+        
+        \item Let $X = \set{0, 1}$ with $\tau = \set{\emptyset, \set{0}, \set{0, 1}}$, this is not Hausdorff since we can't separate $0$ and $1$. 
+        \item The cofinite topology is not Hausdorff on infinite spaces $X$. 
+    \end{itemize}
+\end{example}
+
+\paragraph{Properties of Hausdorff spaces: } 
+\begin{itemize}
+    \item \textbf{Singletons are closed:} Take $y \in \set{x}^c$ then we can take an open neighborhood of $y$ that doesn't contain $x$. i.e 
+    $$U \subseteq \set{x}^c \implies \set{x}^c \text{ is open}$$
+    Note that we clearly get that all finite sets are closed. 
+
+    \item \textbf{Convergent sequences have exactly $1$ limit:} Suppose we have two distinct limits, then we could separate $x_1, x_2$ by open sets. But 
+    by definition of convergence the sequence must be eventually in both neighborhoods, contradiction. 
+\end{itemize}
+
+\subsection{Equivalence of topological spaces}
+
+\begin{definition}
+    Two spaces $X_1, X_2$ are said to be \emph{topologically equivalent / Homeomorphic} if and only if there exists a homeomorphism $\varphi \colon X_1 \to X_2$.
+\end{definition}
+
+\begin{definition}
+    An injective continuous map $f \colon X \to Y$ is called an \emph{embedding} if and only if 
+    $$f \colon X \to f(X) \text{ is a homeomorphism w.r.t subspace topology}$$
+    i.e iff
+    $$f^{-1} \colon f(X) \to  X \text{ is also continuous w.r.t subspace topology}$$
+\end{definition}
+
+\begin{example} 
+    \begin{itemize}
+        \item Let $X = (0, 1)$ and $Y = \R$, define $f(x) \colon X \to Y$ by 
+        $$f(x) = \operatorname{cotan} (\pi x) \quad \text{draw it}$$
+        is a Homeomorphism. 
+    
+        \item Let $X = Y = \R$ and $f(x) = x^3$, then $f(x)$ is a Homeomorphism.
+    \end{itemize}
+\end{example}
+
+\begin{remark}
+    Continuity of $f^{-1}$ is essential, i.e if $f$ is bijective and continuous it need not be a homeomorphism: Take $f \colon [0,1) \to S^1$ with 
+    $$f(x) = (\cos 2 \pi x, \sin 2 \pi x) \quad \text{walk $2 \pi x$ radians positively around $S_1$}$$
+    Its inverse is not continuous, since a point very close to zero has value very close to a point close to $1$, more formally 
+    $$f^{-1} \text{ is not continuous at } (1, 0)$$
+\end{remark}
+
+\begin{example}
+    Examples of equivalent spaces:
+    \begin{itemize}
+        \item $(0, 1) \cong (a, b) \cong (a, \infty) \cong (-\infty, b) \cong \R$ for any $a, b \in \R$.
+        \item $D^2 \cong (0, 1) \times (0, 1)$, rescale the ray and the rectangle. 
+        \item $\set{0,1}^\N \cong \text{ cantor set in $\R$ with the subspace topology}$, Where 
+        $$C = \bigcap_{n = 0}^{\infty} A_n \quad A_0 = [0,1], \ A_{n+1} = A_n \text{ where you remove the middle part of each of the subsets}$$
+        The idea is to index all the points in the cantor set using a sequence where $0 \to L$, $1 \to R$, this map would be a Homeomorphism.
+        \item Take $S^2 \setminus \set{a} \cong \R^2$ with $a \in S^2$: this is via stereographic projection (3B1B).  
+    \end{itemize}
+    Non-examples of equivalent spaces: 
+    \begin{itemize}
+        \item $(0,1) \not\cong [0,1]$ since $[0,1]$ is compact, whereas $(0,1)$ is not compact. 
+        \item $\Q$ with subspace topology is not Homeomorphic to $\R$, since they have different cardinalities.
+        \item $\set{0,1}^\N \not\cong \R$ $\R$ has no nontrivial clopen sets, whereas every cylinder in $\set{0,1}^\N$ is clopen.
+        \item $S^1 \not\cong [0, 1) \text{ nor } [0,1]$. For $[0, 1)$ use compactness, for the $[0,1]$ think of paths. 
+        \item $\Z$ with the evenly-spaced topology $\not\cong \set{0,1}^\N$, different cardinalities. 
+        \item $S^2 \not\cong S^1 \times S^1$ notice that $T^2 \cong S^1 \times S^1$ (fundamental group).
+        \item $\R \not\cong \R^2$, paths again. 
+    \end{itemize}
+\end{example}
+
+\subsection{Topological Properties / Topological Invariants:} 
+A property $P$ is said to be \emph{a topological property} if it is shared among Homeomorphic spaces. I.e 
+$$X \cong Y, \ X \text{ has } P \implies Y \text{ has } P$$
+
+\begin{example}
+    \begin{itemize}
+        \item Cardinality. 
+        \item Hausdorff property. 
+        \item Connectedness / path connectedness. 
+        \item Compactness. 
+        \item Metrizability. 
+        \item Fundamental group. 
+    \end{itemize}
+\end{example}
+
+\paragraph{More on continuity: }
+\begin{itemize}
+    \item All constant functions. 
+    \item The inclusion map 
+    $$i \colon x \to x$$
+    \item Composition of two continuous functions is continuous. 
+    \item If $f \colon X \to Y$ is continuous and $X_0 \subseteq X$, then 
+    $$f_{| X_0} \text{ is continuous}$$
+    \item Projections: $\pi_X \colon X \times Y \to X$ with 
+    $$\pi_X (x, y) \to x$$
+    is continuous w.r.t to the topology. 
+    \item Pasting on open sets / closed sets: Let $A, B \subseteq X$ (be open / closed), $f \colon A \to Y$ and $g \colon B \to Y$ which are continuous 
+    w.r.t the subspace topology. Define $h \colon A \cup B \to Y$ by 
+    $$h(x) := \begin{cases}
+        f(x) \quad \text{ if $x \in A$} \\
+        g(x) \quad \text{ if $x \in B$}
+    \end{cases}$$
+    then 
+    $$f_{A \cap B} = g_{A \cap B} \implies h (x) \text{ continuous}$$
+\end{itemize}
+
+\begin{proof}[Proof of pasting on opens]
+    \mbox{}\\
+    Let $V$ be open, then 
+    $$h^{-1}(V) = f^{-1}(V) \cup g^{-1} (V)$$
+    but $f^{-1} (V)$ and $g^{-1}(V)$ are open in $A, B$ respectively. 
+    Therefore $\exists U_A, U_B$ open in $X$ such that 
+    $$U_A \cap A = f^{-1}(V), \quad U_B \cap B - g^{-1} (B)$$
+    Therefore we can write 
+    $$h^{-1} (V) = (U_A \cap A) \cup (U_B \cap B)$$
+    But $U_A \cap A, \ U_B \cap B$ are both open in $X$ (finite intersection of open sets), and therefore 
+    $$h^{-1} (V) \text{ is open in } X$$
+    Therefore $h$ is continuous.  
+\end{proof}
+
+\begin{lemma}[Urysohn's lemma]
+    Let $X$ be a topological space and let $A, B \subseteq X$ be disjoint closed sets. We want to construct a 
+    $f \colon X \to [0,1]$ continuous function such that 
+    $$f(A) = \set{0}, \quad f(B) = \set{1}$$      
+\end{lemma}
+
+\begin{theorem}[Tietze extension theorem]
+    $X, Y$ topological spaces, and $A \subseteq X$ closed. And $f \colon A \to Y$ continuous w.r.t subspace topology. We ask: \\
+    is there a continuous function $g \colon X \to Y$ such that 
+    $$g_{|A} = f$$
+\end{theorem}
+
+When and how can we extend a continuous function from a dense subspace to the entire space? For example
+$$f \colon \Q \to \R, \ \Q \subseteq \R, \quad \text{can $f$ be extended continuously to $\R$}$$
+
+\subsection{Infinite product spaces}
+
+\paragraph{Product topology and box topology}
+Let 
+$X = X_1 \times X_2 \times \cdots = \prod_{i=1}^\infty X_i$
+\begin{itemize}
+    \item \textbf{Box topology:} Use the basis
+    $$\mathcal{B}_{\square}:= \set{U_1 \times U_2 \times \cdots \colon \ U_i \in X_i}$$
+
+    \item \textbf{Product topology} Use the subbasis
+    $$\mathcal{S}_{\otimes} := \set{U_1 \times X_2 \cdots} \cup \set{X_1 \times U_2 \times \cdots} \cup \cdots$$ 
+\end{itemize} 
+Note that the Product topology is coarser than the Box topology. It turns out that the product topology is much more interesting 
+than the Box topology (think about the difference in convergence between both). 
+
+Let $X_i \neq \emptyset$ be an arbitrary set, and let $\set{X_i}_{i \in I}$ We denote 
+$$\prod_{i \in I} X_i = \set{\text{set of all tuples indexed by $I$ of the form } x = (x_i)_{i \in I} \text{ Where $x_i \in X_i$}}$$
+In other words 
+$$x \colon \ I \to \bigcup_{i \in I} X_i, \quad i \to x_i \in X_i$$
+\begin{example}
+    \begin{itemize}
+        \item If $I = \N$ and $X_i = \set{0,1}$, then 
+        $$\prod_{i \in I} x_i = \set{0,1}^\N$$
+
+        \item $I = \R$ and $X_i = [0,1]$, then 
+        $$\prod_{i \in I} X_i = [0, 1]^\R$$
+    \end{itemize}
+\end{example}
+
+\begin{remark}
+    Consider the projection map
+    $$\pi_k \colon (x_i)_{i \in I} \to x_k$$
+    If $U_k \subseteq X_k$, 
+    $$\pi_k^{-1} (U_k) = \set{x \in \prod_{i \in I} x_i \colon x_k \in U_k}$$
+    Then the product topology is generated by this subbasis. 
+    $$\mathcal{S}_{\otimes} = \bigcup_{i \in I} \pi_i^{-1} (U_i) \quad U_i \text{ open in } X_i$$
+    Indeed, note that 
+    $\mathcal{B} (\mathcal{S}_{\otimes})$ consists of sets of the form 
+    \begin{align*}
+        B &= \pi_{k_1}^{-1} \cap \cdots \cap \pi^{-1}_{k_m} (U_{k_m}) \\
+        &= \prod_{j = 1}^m U_{k,j} \times \prod_{i \in I \setminus \set{k_1, \cdots, k_m}} X_i 
+    \end{align*}
+
+    \smallskip\noindent In other words, the product topology is the \emph{coarsest} topology that makes the projection maps continuous. 
+\end{remark}
+
+This is a nice way to generate topologies, i.e if we have
+$$X \overrightarrow{f_i} X_i \quad \text{weak topology}$$
+Then this induces the \emph{coarsest} topology on $X$ that makes the $f_i$s continuous. \\
+If we have a family of topological spaces 
+$$X_i \overrightarrow{f_i} X \quad \text{strong topology}$$
+Then this induces the \emph{finest} topology on $X$ that makes all the $f_i$ continuous.  
+
+The product topology helps us characterize the product space. 
+\begin{itemize}
+    \item All $X_i$ Hausdorff $\implies$ $\prod_{i \in I} X_i$ is also Hausdorff
+    \item All $X_i$ metrizable, and $I$ countable $\implies$ $\prod_{i \in I} X_i$ is metrizable. 
+    \item All $X_i$ are compact $\implies$ $\prod_{i \in I} X_i$ is also compact (Tychonov's theorem). 
+    \item All $X_i$ are connected / path-connected $\implies$ $\prod_{i \in I} X_i$ connected. 
+\end{itemize}
+
+\begin{example}
+    $X = \set{0, 1}^\N$, let $\tau_0 = \text{box topology}$ $\tau_1 = \text{topology inherited by the cylinders}$, $\tau_2 = \text{product topology on $\set{0,1}$-discretely topologized}$. 
+    Notice that $\tau_0$ is really boring, just the discrete topology. Whereas we have 
+    $$\tau_1 = \tau_2$$
+    since 
+    $$[w] = \bigcap_{i =1 }^n \pi_i^{-1} (\set{w_i}) \implies \tau_1 \subseteq \tau_2$$
+    and 
+    $$\pi^{-1} (\set{a}) = \bigcup_{w \in \set{0,1}^{k-1}} [wa] \implies \tau_2 \subseteq \tau_1$$
+\end{example}
+
+\paragraph{Convergence in $\prod_{i \in I} X_i$.} 
+\begin{proposition}
+    Let $x^{(1)}, x^{(2)}, \cdots$ a sequence in $\prod_{i \in I} X_i$ and $x \in \prod_{i \in I}$. 
+    $$x^{(n)} \to x \iff \forall i \in I, \ x_i^{(n)} \to x_i$$
+\end{proposition}
+This is because for all $U \ni x \in S_{\otimes}$ $\exists n_0 \ \forall n \geq n_0, \ x^{(n)} \in U$ which is equivalent to $\forall k \in I$ and $\forall U_k$ s.t $x \in \pi^{-1}(U_k)$, 
+by definition we have $x_k \in U_k$ and hence $\exists n_0$, $\forall n \geq n_0$ we have 
+$$x^{(n)}_k \in U_k \iff x^{(n)} \in \pi_k^{-1} (U_k)$$
+
+Whereas if we take $[0,1]^\N$ with box topology, and 
+$$x^{(n)} = (1/n, 1/n, \cdots)$$
+Then $x^{(n)}$ does not converge: let $U_k = [0, 2^{-k})$ and take 
+$$U = \prod_{k \in \N} U_k$$
+
+\paragraph{Continuity of $f \colon \ X \to \prod_{j \in J} Y_j$.} 
+\begin{proposition}
+    Let $f \colon \ X \to \prod_{j \in J} Y_j$ is continuous iff 
+    $$\forall j \ \pi_j \circ f \text{ is continuous}$$
+    Equivalently $\forall j$ $\exists f_j \colon x \to y_j$ continuous s.t 
+    $$f(x) = (f_j(x))_{j \in J}$$  
+\end{proposition}
+
+\paragraph{Continuity of $f \colon \prod_{i \in I} X_i \to Y$.} There is no nice characterization here. 
+
+
+\subsection{Metrizable spaces} 
+\begin{definition}
+    A \emph{metric} on a set $X$ is just a function $d \colon \ X \times X \to \R$ such that 
+    \begin{enumerate}
+        \item $d(x, y) \geq 0$ with $d(x, y) = 0 \iff x = y$. 
+        \item $d(x, y) = d(y, x)$ 
+        \item $d(x, y) \leq d(x, z) + d(z, y)$ $\forall x, y, z \in X$.  
+    \end{enumerate} 
+\end{definition}
+
+\paragraph{Topology associated with a metric. } This is the topology generated by the basis of open balls
+$$B_r(x) = \set{y \in X \mid \ d(x, y) < r} \quad x \in X, \ r \in \R$$
+Note basis: for union it is trivial, for intersection of $B_r(x), B_s(y)$ take 
+$$t \leq r - d(x, z) \xrightarrow{\Delta\text{-ineq}} B_t(z) \subseteq B_r(x)$$
+Then take 
+$$\min \set{r - d(x, z), s - d(y,z)} \subseteq B_r(x) \cap B_s (y)$$
+
+\begin{example}
+    On $R^n$, $x = (x_1, \cdots, x_n), \ y = (y_1, \cdots, y_n)$ 
+    \begin{itemize}
+        \item Euclidean metric. 
+        $$d_2(x, y) = \sqrt{\sum_i (y_i - x_i)^2}$$
+        \item Taxicab metric 
+        $$d_1(x, y) = \sum_i |y_i - x_i|$$
+        
+        $$d_\infty = \max_i |y_i - x_i|$$
+    \end{itemize}    
+    Are these topologically equivalent + (draw them)?  
+\end{example}
+
+\begin{definition}
+    We say that two metrics $d_1, d_2$ on a set $X$ are \emph{topologically equivalent}, if they generate the same topology. 
+\end{definition}
+
+\begin{remark}
+    Every metric $d$ is equivalent to a bounded metric. Indeed, 
+    $$\overline{d} (x, y) := \min \set{d(x, y), 1} \leq 1$$
+    This is basically saying that we are taking the open balls with $r < 1$. 
+    Another option 
+    $$\tilde{d} := \frac{d(x,y)}{1 + d(x, y)} < 1$$ 
+\end{remark}
+
+\begin{remark}
+    NOTE: Metric space $\neq$ Metrizable space. 
+\end{remark}
+ 
+\begin{example}
+    \begin{itemize}
+        \item The discrete topology on any set $X$ is always metrizable: 
+        $$d(x, y) = \begin{cases}
+            1 \quad &\text{if } x \neq y \\
+            0 \quad &\text{if } x = y
+        \end{cases}$$
+        
+        \item $X = \set{0, 1}^\N$ with the product topology is metrizable; one metric is
+        $$d (x, y) := \begin{cases}
+            2^{- \# (x, y)} \quad &\text{if } x \neq y \\
+            0 \quad &\text{if } x = y
+        \end{cases}$$
+        Where 
+        $$\#(x, y) := \min \set{n \mid \ x_n \neq y_n}$$
+        Another idea is to do 
+        $$\tilde{d} (x, y) = \sum_{n = 1}^{\infty} 2^{- n} \Delta_0(x_0,y_0)$$
+
+        \item \textbf{A non-metrizable space:} $X = \set{0, 1}^{I}$ with the product topology where $I$ is uncountable. 
+        \begin{proof}
+            Suppose that $X$ has a metric $d$, note that for every point
+            $$\bigcap_{n \in \N} B_{2^{-n}} (x) = \set{x}$$
+            A basis for the product topology on $X$ is generated by the subbasis $\pi^{-1}_k (U)$ where $U$ open in $\set{0, 1}$ and $k \in I$; 
+            i.e 
+            $$\pi^{-1}_k (U) \quad U \in \set{\set{0}, \set{1}}$$
+            Therefore any element of the basis generated by these is of the form 
+            $$C(K, w) = \set{x \in X, \colon \ \forall i \in K, \ x_i = w_i} \quad \text{with } K \subseteq I \text{ finite}, \ w \colon \ K \to \set{0,1}$$
+            Fix some $x_0 \in X$, consider $B_\varepsilon(x_0)$ we should have some 
+            $$C(K, w) \subseteq B_\varepsilon(x_0)$$
+            In particular, $\forall n$ $\exists K_n \subseteq I$ finite, and $x \in C(K_n, x_{|K_n}) \subseteq B_{2^{-n}}(x)$. But this implies that 
+            $$\bigcap_{n = 1}^{\infty} C(K_n, x_{|K_n}) = \set{x}$$
+            Since $\bigcup_{n \in \N} K_n$ is countable and $I$ uncountable, 
+            $$\exists k \in I \setminus \bigcup_n K_n$$
+            We define $y$ as follows, 
+            $$y_i := \begin{cases}
+                x_i \quad &\text{if } i \in \bigcup_n K_n \\
+                1 - x_i \quad &\text{o.w} 
+            \end{cases}$$
+            Therefore $y \neq x$, but $\forall K_n$, 
+            $$y_ n \in C(K_n, x_{|K_n})$$
+            Therefore 
+            $$y \in \bigcap_n C(K_n, x_{|K_n})$$
+        \end{proof}
+    \end{itemize}   
+\end{example}
+
+\begin{example}
+    Various topologies on Let $X = \R^\N$ (all sequences of real numbers). 
+    \begin{itemize}
+        \item Product topology, is metrizable
+        $$d(x, y) := \sum_{i = 1}^{\infty} \frac{\overline{d}(x_i, y_i)}{2^n}$$
+
+        \item Uniform Topology: defined by 
+        $$d(x, y) = \sup \set{\overline{d}(x_i, y_i) \mid \ i \in \N}$$
+
+        \item Box topology: Which is not metrizable. 
+    \end{itemize}
+    Indeed, 
+    $$\text{prod. top. } \subseteq \text{ uniform top. } \subseteq \text{ box top.}$$
+\end{example}
+
+\begin{theorem}
+    Let $(X_i)_{i \in I}$ be a family of non-trivial metrizable spaces, then 
+    $$\prod_{i \in I} \text{ is metrizable } \iff \text{ $I$ is countable}$$
+\end{theorem}
+
+\begin{proof}
+    \begin{itemize}
+        \item[$\impliedby$] this looks like what we did for product topology of $\R^\N$. 
+        \item[$\implies$] By contradiction, like what we did for $\set{0, 1}^I$ is not metrizable.
+    \end{itemize}
+\end{proof}
+
+In a metrizable space, all topological notions can be expressed in terms of convergence of sequence. Indeed 
+$$\overline{E} = \set{x \in X \mid \ \exists a_1, \cdots \in E \text{ s.t } x_n \to x}$$
+$$\subseteq \text{ is true in general}$$
+$$\operatorname{Lim} E = \set{x \in X \mid \ \exists x_1, x_2, \cdots \in E \setminus \set{x} \text{ s.t } x_n \to x}$$
+Moreover, $f \colon X \to Y$ with $X$ metrizable: 
+$$f \text{ continuous} \iff (x_n \to x) \implies (f(x_n ) \to f(x)), \quad \implies \text{is true in general}$$
+
+\begin{proof}
+    Let $X, Y$ be top spaces, and $X$ metrizable, let $f \colon X \to Y$. Then $f$ continuous iff whenever $x_n \to x$ $\implies$ $f(x_n) \to f(x)$. \\
+    \begin{itemize}
+        \item[$\implies$] This is true in general. 
+        \item[$\impliedby$] Suppose that $f$ is not continuous. $\exists V \ni f(x)$ s.t $\forall N \ni x$ we have that 
+        $$f(U) \not\subseteq V$$
+        Let $d$ be a metric on $X$, then $\forall n$ $f(B_{2^{-n}}) (x) \not\subseteq V$ take 
+        $$x_n \in B_{2^{-n}}(x) \ \text{ s.t } f(x_n) \not\in V$$
+        But $x_n \to x$ and $f(x_n) \not\to f(x)$. 
+    \end{itemize}
+\end{proof}
+
+\paragraph{Countability properties} 
+\paragraph{First countability. } 
+\begin{definition}
+    A \emph{neighborhood basis} (local basis) around $x \in X$ is a family $\set{N_i \mid \ i \in I}$ of neighborhoods of $x$ s.t $\forall$ open $U \ni x$, 
+    $\exists i$ s.t 
+    $$x \in N_i \subseteq U$$
+\end{definition}
+
+\begin{definition}
+    A space $X$ is said to be first countable if around each point $x$, $\exists$ a countable neighborhood basis. 
+\end{definition}
+
+\paragraph{Uniform continuity} 
+\begin{definition}
+    Let $X, Y$ be metric spaces, a map $f \colon \ X \to Y$ is \emph{uniformly continuous} if
+    $\forall \varepsilon > 0, \ \exists \delta > 0$ s.t $\forall x, x' \in X$: 
+    $$d(x, x') < \delta \implies d(f(x), f(x')) < \varepsilon$$ 
+\end{definition}
+
+\begin{example}[(non-uniformly) continuous function]
+    $f \colon (0, 1) \to \R$, $f(x) = \frac{1}{x}$. Let $\varepsilon = 1$, then $\forall \delta > 0$. Let $x = \delta$ and $x' < \delta$ s.t 
+    $$\frac{1}{x'} > \frac{1}{x} + 1$$
+    Then we have that 
+    $$d(x', x) < \delta, \quad d(f(x), f(x')) > \varepsilon$$
+\end{example}
+
+\paragraph{Convergence of functions} 
+Let $X$ be a set and $Y$ a topological space. We have at least two notions of convergence of maps from $X \to Y$ ($\prod_{i \in X} Y$).
+\begin{enumerate}
+    \item Pointwise convergence: 
+    $$f_n \to f \quad \iff \forall x \in X, \ f_n(x) \to f(x)$$ 
+    This is precisely convergence in the product topology! 
+
+    \item Uniform convergence (if $Y$ is metric) 
+    $$f_n \xrightarrow{u} f \iff \forall \varepsilon > 0, \ \exists n_0 \ \forall n \geq n_0, \ \forall x \in X, \ |f_n(x) - f(x)| < \varepsilon$$
+    This is the notion of convergence w.r.t to the uniform metric on $Y^X$. 
+    $$\rho(f, g) := \sup \set{d(f(x), g(x)) \colon \ x \in X}$$
+\end{enumerate} 
+
+\begin{example}[sequnce of function that converges pointwise but not uniformly]
+    Let $X = Y = [0,1]$ and $f_n(x) = x^n$. Then 
+    $$f(x) = \begin{cases}
+        1 \quad \text{if } x = 1 \\
+        0 \quad \text{o.w}
+    \end{cases}$$ 
+\end{example}
+
+\begin{theorem}[Uniform Convergence Theorem]
+    \mbox{}\\
+    Let $X$ be a top. space and $Y$ a metric space. Let $f_n \colon X \to Y$ be a sequence in $Y^X$. If 
+    $f_n \to f$ \emph{uniformly}, then $f$ is continuous.     
+\end{theorem}
+\emph{Interpretation:} $C(X, Y)$ (set of continuous functions from $X$ to $Y$) as a subset $Y^X$ is closed w.r.t uniform topology.\\ 
+\emph{Interpretation:} Let $f \colon X \to Y$, if $\forall \varepsilon >0$, $\exists$ continuous $f_\varepsilon \colon X \to Y$ s.t 
+$$\rho(f, f_\varepsilon) < \varepsilon$$
+then $f$ is continuous. 
+
+\begin{proof}
+    Let $x_0 \in X$ and $y_0 \in f(x_0)$. Let $\varepsilon > 0$, then $\exists N$ s.t $\forall n \geq N$ $\forall x \in X$ 
+    $$d(f_n(x), f(x)) < \varepsilon$$
+    Since $f_N$ is continuous, we have that $\exists N \ni x_0$ s.t $f_N (N) \subseteq B_\varepsilon(f_N(x))$. Hence for every $x \in N$ we have that 
+    $$d(f_n(x), f_n(x_0)) < \varepsilon$$
+    and 
+    $$d (f_n(x), f(x)) < \varepsilon$$
+    $$d (f_n(x_0), f(x_0)) < \varepsilon$$
+    Then by $\Delta$-ineq 
+    $$d(y_0, f(x)) < 3 \varepsilon$$
+    Therefore 
+    $$f(x) \in B_\varepsilon(y_0) \implies f(N) B_\varepsilon (f(x_0))$$
+\end{proof}
+
+\section{Gluing constructions}
+
+\begin{example}
+    \begin{itemize}
+        \item  We can get $S^1$ by gluing the endpoints of $[0, 2\pi]$. 
+        \item We can get the unit sphere $S^2$ by gluing the boundary of the (closed) unit disk in $R^2$. 
+        \item Let $X$ be the union of 3 line segments. Identify one of the endpoints, look at the space you get (picture). 
+        \item The torus can be constructed from a square via the usual gluing, but also $T = S^1 \times S^1$. 
+        \item Start with a closed rectangle, Identify two opposite edges in opposite directions, you get a mobius strip. 
+        \item Take the rectangle, identify two opposite edges with the same direction, and two other in opposite directions, you get the Klein bottle. 
+    \end{itemize}
+\end{example}
+
+\subsection{Two points of view} 
+We can think of these gluing in two ways 
+\begin{enumerate}
+    \item Via a \emph{quotient map}: $q \colon X \to X'$ surjective map with some property, see below. 
+    Then we declare $B \subseteq Z'$ open iff 
+    $$q^{-1} (B) \text{ is open}$$
+    \item Via an \emph{identification relation}: $a \sim b$, note $\sim$ must be an equivalence relation.Then 
+    $$X' = X / \sim $$
+    We declare $B \subseteq X / \sim$ to be open if 
+    $$\bigcup_{[x] \in B} [x] \text{ is open in $X$}$$
+\end{enumerate}
+
+\begin{definition}
+    Let $Y$ be a topological space, and $f \colon X \to Y$ a map we define the \emph{weak topology on $X$} is the coarsest topology that makes $f$ continuous. 
+    Conversely, if $X$ is topological space the \emph{strong topology on $Y$} is the finest topology on $Y$ that makes $f$ continuous. 
+\end{definition}
+
+\begin{remark}
+    Let $f \colon X \to Y$ and $X$ topological, then the strong topology on $Y$ is 
+    $$\tau_Y = \set{B \subseteq Y \mid \ f^{-1} (B) \text{ open in } X}$$
+    If $f$ is surjective, then the strong topology is also called the quotient topology. 
+\end{remark}
+
+\begin{definition}
+    A surjective map $q \colon X \to Y$ is called a \emph{quotient map} if $\forall B \subset Y$, 
+    $$B \text{ open } \iff f^{-1}(B) \text{ open}$$
+\end{definition}
+
+\begin{definition}
+    If $X$ is a topological space, and $f \colon X \to Y$ a surjective map, then 
+    $Y$ together with the quotient topology is called a quotient space. 
+\end{definition}
+
+\begin{definition}
+    If $X$ is a topological space, and $\sim \subset X \times X$ an equivalence relation. The quotient topology on $X / \sim$ is defined as 
+    $$B \subseteq X / \sim \text{ open } \iff \bigcup_{[x] \in B} [x] \text{ open in $X$}$$
+    We define the quotient map $q \colon X \to X / \sim$ by 
+    $$q(x) := [x]$$
+\end{definition}
+
+\begin{remark}
+    The quotient of a Hausdorff space need not be Hausdorff. Consider $X = [0,1] \times \set{0,1}$ as the disjoint union of $[0,1]$ and $[0,1]$ let 
+    $$(x, a) \sim (y, b) \iff (x = y \text{ and } a \neq b \text{ and } x \neq 0) \text{ or } (x = y = 0 \text{ and } a = b)$$
+\end{remark}
+
+\begin{proposition}
+    Let $X \xrightarrow{q} Y$ be a quotient map, and $Y \xrightarrow{f} Z$. Then 
+    $$f \text{ continuous } \iff f \circ q \text{ is continuous}$$
+    Draw the picture. 
+\end{proposition}
+
+\begin{proof}
+    Let $C \subset Z$ be an open set, then $(f \circ q)^{-1} (C) = q^{-1} (f^{-1} (C))$ is open in $X$. 
+    But $q$ is a quotient map so this is the case iff $f^{-1}(C)$ is open in $Y$. 
+\end{proof}
+
+\paragraph{Question} Let $h \colon X \to Z$ a cont map, does there exist a map $f \colon Y \to Z$ s.t $h = f \circ q$? is it unique?
+
+\subsection{Connected \& disconnected spaces} 
+\begin{definition}
+    A space $X$ is \emph{disconnected} if $\exists$ non-empty open $A, B$ s.t 
+    $$A \cap B = \emptyset, \quad A \cup B = X$$
+\end{definition} 
+
+\begin{remark}
+    $A$ and $B$ are clopen sets in the definition above, hence 
+    $$\text{$X$ is connected } \iff \text{no nontrivial clopen subsets}$$
+\end{remark}
+
+\begin{example}
+    Connected spaces
+    \begin{itemize}
+        \item $\R^d$, $[0,1]$, $(0, \infty)$. 
+        \item $\R^2$ with lexicographic order topology.
+        \item Any ball in $\R^d$.  
+        \item Unit disk, remove one diameter, except the center.  
+    \end{itemize}
+    Disconnected spaces
+    \begin{itemize}
+        \item $(0,1) \cup (1,2)$ 
+        \item $\set{0,1}^\N$, in fact this is \emph{totally disconnected} (i.e the only nonempty connected subsets are singletons). 
+        \item $\Q$ is totally disconnected. 
+        \item Every nontrivial discrete space. 
+        \item Evenly spaced topology of $\Z$. 
+    \end{itemize}
+\end{example}
+
+\begin{proposition}
+    The continuous image of any connected space is connected. 
+\end{proposition}
+
+\begin{proposition}
+    Let $X$ be any space, the union of any collection of connected subsets of $X$ that have a common element is connected.   
+\end{proposition}
+
+\begin{proof}
+    Let $\set{E_i}_{i \in I}$ be connected subsets of $X$ s.t $x_0 \in \bigcap_{i \in I} E_i \neq \emptyset$, wlog  
+    $$X = \bigcup_{i \in I} E_i$$
+    Suppose disconnected, wlog $x \in A$, let $y \in B$. Let $k$ be such that
+    $$y \in E_k$$
+    Then 
+    $$E_k \cap A, \quad E_k \cap B$$
+    form a nontrivial open partition of $E_k$, but $E_k$ connected: contradiction. 
+\end{proof}
+
+\begin{definition}
+    Two sets $A, B$ are \emph{mutually separated} if 
+    $$\overline{A} \cap B = A \cap \overline{B} = \emptyset$$
+\end{definition}
+
+\begin{proposition}
+    If $A, B \subseteq X$ are mutually separated, and $A \cup B$ is $X$, then 
+    $$A, B \text{ clopen}$$
+\end{proposition}
+
+\begin{proposition}
+    Let $X$ be a topological space, then $Y \subseteq X$ is disconnected iff it can be partitioned into two nonempty, mutually separated sets $A, B \subseteq X$ s.t 
+    $$Y \subseteq A \cup B \text{ and } A \cap Y \neq \emptyset, \ B \cap Y \neq \emptyset$$
+\end{proposition}
+
+\begin{proposition}
+    Let $A, B \subseteq X$ be two mutually separated subsets, let $E$ be a connected subset of $X$, and $E \subset A \cup B$, then 
+    $$E \subseteq A, \text{ or } E \subseteq B$$ 
+\end{proposition}
+
+\begin{proposition}
+    If $E \subseteq X$ is connected and $F \supset E \cup \partial E$ ($E \subset F \subset \overline{E}$), then $F$ is connected. 
+\end{proposition}
+
+\begin{proof}
+    Let $A, B \subseteq X$ be mutually separated sets with $F \subseteq A \cup B$ and 
+    $$F \cap A \neq \emptyset$$
+    Then $E \subset A \cup B$, hence $E \subset A$ or $E \subset B$. 
+    wlog $E \subset A$, hence $\overline{E} \subset \overline{A}$ therefore 
+    $$\overline{E} \cap B \subset \overline{A} \cap B = \emptyset$$ 
+    Therefore $F \cap B \subset \overline{E} \cap B = \emptyset$. 
+    Hence $F = A$, $F$ connected. 
+\end{proof}
+
+\begin{theorem}
+    The product of a family of connected spaces is connected. i.e 
+    $$X_i \ (i \in I) \text{ connected} \iff \prod_{i \in I} X_i \text{ connected}$$
+\end{theorem}
+
+\begin{proof}[For finite products]
+    Note, this is for product of two, for finite product, just do induction. 
+
+    Let $X,Y$ be connected spaces, suppose that the product is not connected. Let $A, B$ be nonempty disjoint subsets open subsets of $X \times Y$ s.t 
+    $$X \times Y = A \cup B$$
+    \textbf{Claim 1:} Either $\exists x_0 \in X$ s.t $\set{x_0} \times Y$ intersects both $A$ and $B$, or $\exists y_0 \in Y$ s.t 
+    $X \times \set{y_0}$ intersects both $A$ and $B$. Wlog suppose we have such a $y_0$. \\
+    Let $A_{y_0} = \set{x \in X \colon (x, y) \in A} \neq \emptyset$, and 
+    $B_{y_0} = \set{x \in X \colon (x, y_0) \in B} \neq \emptyset$. \\
+    \textbf{Claim 2:} $A_{y_0}, B_{y_0}$ are open in $X$. Observe that 
+    $$A_{y_0} \cap B_{y_0} = \emptyset, \quad A_{y_0} \cup B_{y_0} = X$$
+    Hence $X$ is disconnected, contradiction. 
+
+    \textbf{Proof of Claim 2:} we will only prove that $A_{y_0}$ is open. Let $x \in A_{y_0}$, then 
+    $(x, y_0) \in A$, with $A$ open. By definition of the product topology, $\exists U \ni x$ open in $X$ and $V \ni y_0$ open in $Y$ s.t 
+    $$(x_0, y_0) \in U \times V \subseteq A$$
+    Therefore $x \in U \subseteq A_{y_0}$, hence $A_{y_0}$ is open. 
+
+    \textbf{Proof of claim 1:} Suppose that (a) is not true, then $\forall x \in X$ we have that 
+    $$\set{x} \times Y \subseteq A \text{ or } \set{x} \times Y \subseteq B$$
+    Let $(x_1, y_1) \in A, (x_2, y_2 \in B)$, consider $(x_1, y_2)$, Since $(x_1, y_1) \in A$, by the above we have 
+    $$(x_1, y_2) \in A$$
+    Hence $X \times \set{y_2}$ intersects both $A$ and $B$. 
+\end{proof}
+
+\begin{lemma}
+    With the notation of the theorem below: 
+    $$\bigcup_{J \subset I \text{ finite}} \tilde{X}_J \text{ is dense in } X$$
+\end{lemma}
+
+\begin{proof}
+    Let $B$ be a basis element for the product topology on $X$, therefore 
+    $$B = \bigcap_{k \in J} \pi^{-1}_k (U_k) \quad \text{for some finite $J$, $U_k$ open in $X_k$}$$
+    We want to show that 
+    $$B \cap \tilde{X}_J \neq \emptyset$$
+    Indeed, let $b \in B$ define 
+    $$x_i := \begin{cases}
+        b_i \quad \text{if} i \in J \\
+        a_i \quad \text{if} i \not\in J
+    \end{cases}$$
+    Then $x \in B$ and $x \in \tilde{X}_j$. 
+\end{proof}
+
+\begin{proof}[General case]
+    \begin{itemize}
+        \item \textbf{Case 1:} $\prod_{i \in I} X_i = \emptyset$, trivial. 
+        \item \textbf{Case 2:} $\prod_{i \in I} X_i \neq \emptyset$, take $a \in \prod_{i \in I} X_i$ (define $X = \prod_{i \in I} X_i$). 
+        For every \emph{finite} subset $J \subset I$, define 
+        $$\tilde{X}_J := \set{x \in X \colon \forall i \not\in J \ x_i = a_i}$$
+        Notice that 
+        $$\tilde{X}_J \cong \prod_{i \in J} X_i \quad \text{connected}$$
+        Since $a \in \bigcap_{J \subset I \text{ finite}} \tilde{X_j}$, then 
+        $$\bigcup_{J \subset I} \tilde{X_j} \quad \text{is connected}$$
+        Therefore by proposition above 
+        $$X = \overline{\bigcup_{J \subset I} \tilde{X}_J} \quad \text{ is connected}$$
+
+    \end{itemize}
+\end{proof}
+
+\begin{definition}
+    Let $X$ be an arbitrary space, we write $x \sim y$ if $\exists$ connected $C \subseteq X$ s.t 
+    $$x, y \in C$$
+    Note that this is an equivalence relation, we call the equivalence class the \emph{connect components} of $X$
+\end{definition}
+
+\begin{proposition}
+    Each connected component of a space $X$ is connected. 
+\end{proposition}
+
+\begin{proof}
+    Let $C$ be a connected component, suppose that we have $A, B \subset X$ mutually separated sets s.t 
+    $$A \cap C, B \cap C \neq \emptyset, \quad (A \cup B) \cap C = C$$
+    Pick $x \in A \cap C$ and $y \in B \cap C$, since $x \sim y$ 
+    $$\exists E \subset X \text{ s.t } \set{x,y} \subset E$$
+    Observe that $E \subset C$, then we have that proposition $5$ either $E \subset A$ or $E \subset B$: contradiction. 
+\end{proof}
+
+\begin{remark}
+    For $x \in X$, the connected component containing $x$ denoted $C(x)$ is the largest connect subset of $X \ni x$. 
+\end{remark}
+
+\begin{example}
+    \begin{itemize}
+        \item The connected components of $(0,1) \cup (1,2)$ are exactly $(0,1), (1,2)$. 
+        \item The connected components of $\Q$ are the singletons. 
+        \item the connected components of $\set{0,1}^\N$ are the singletons. 
+    \end{itemize}
+\end{example}
+
+\begin{proposition}
+    Each connected component of $X$ is closed in $X$. 
+\end{proposition}
+
+\begin{proof}
+    Let $C$ be a connected component, by (6), $\overline{C}$ is also connected, hence by maximality of $C$ 
+    $$\overline{C} \subset C$$
+\end{proof}
+
+\paragraph{Connected sets in $R$ wiht the Euclidean topology} 
+\begin{proposition}
+The connected subsets of $\R$ are exactly the intervals: a set $I\subset\R$ is connected iff it is an interval.
+\end{proposition}
+
+\begin{proof}
+\begin{itemize}
+\item[$(\Rightarrow)$] 
+Contrapositive. If $I$ is not an interval, then there exist $x,y\in I$ and $z\in\R$ with $x<z<y$ and $z\notin I$. Set
+\[
+U:=I\cap(-\infty,z),\qquad V:=I\cap(z,\infty).
+\]
+Then $U,V$ are nonempty, disjoint, open in the subspace $I$, and $I=U\cup V$. Hence $I$ is disconnected.
+
+\item[$(\Leftarrow)$] 
+Assume $I$ is an interval. Suppose $I=U\cup V$ with $U,V\subset I$ nonempty, disjoint, open in the subspace $I$. Pick $a\in U$ and $b\in V$ with $a<b$ (swap $U,V$ if needed). Since $I$ is an interval and $a,b\in I$ with $a<b$, we have $[a,b]\subset I$.
+
+Let $S:=U\cap[a,b]$, which is nonempty and bounded above by $b$. Let $s:=\sup S$. Then $s\in[a,b]\subset I$.
+
+\smallskip
+\emph{Case 1: $s\in U$.} Because $U$ is open in $I$, there exists $\varepsilon>0$ such that 
+\[
+(s-\varepsilon,s+\varepsilon)\cap I\subset U.
+\]
+Since $s<b$, choose $t\in (s,\min\{s+\varepsilon,b\})$. Then $t\in I$ and hence $t\in U$, which contradicts that $s$ is an upper bound of $S$.
+
+\smallskip
+\emph{Case 2: $s\in V$.} Because $V$ is open in $I$, there exists $\varepsilon>0$ such that 
+\[
+(s-\varepsilon,s+\varepsilon)\cap I\subset V.
+\]
+By the definition of supremum, there exists $u\in S$ with $s-\varepsilon<u\le s$. Then $u\in (s-\varepsilon,s+\varepsilon)\cap I\subset V$, but $u\in S\subset U$, contradicting $U\cap V=\varnothing$.
+\smallskip
+Both cases are impossible, so no such separation exists. Hence $I$ is connected.
+\end{itemize}
+\end{proof}
+
+\begin{theorem}[The intermediate Value Theorem]
+    Let $X$ be a connected space, and $f \colon X \to \R$ continuous. Let $a, b \in X$ be distinct. Then, $f$ takes all the values 
+    between $f(a)$ and $f(b)$
+\end{theorem}
+
+\begin{proof}
+    $X$ is connected, therefore $f(X)$ is connected, hence $f(X)$ interval.
+\end{proof}
+
+\subsection*{Path-connectedness} 
+\begin{definition}
+    A space $X$ is \emph{path connected} if $\forall a, b \in X$ $\exists$ a continuous $\gamma \colon [0,1] \to X$ s.t 
+    $$\gamma(0) = a, \gamma(1) = b$$
+\end{definition}
+
+\begin{proposition}
+    Every path connected space is connected. 
+\end{proposition}
+
+\begin{example}[Connected but not path-connected]
+    Consider 
+    $$X := \set{(x, \sin 1/x) \colon x \in (0, \infty)} \subseteq \R^2$$
+    Notice that 
+    $$\overline{X} = X \cup \set{(0,y) \colon y \in [-1, 1]}$$
+    Claims: 
+    \begin{itemize}
+        \item $\overline{X}$ is connected, this is because $X$ is the continuous image of a connected space. 
+        \item $\overline{X}$ is not path connected. 
+    \end{itemize}
+    \begin{proof}[proof of claim $2$]
+        Suppose that $X$ is path connected, in particular there is a path 
+        $$\gamma \colon [0,1] \to \overline{X}$$
+        s.t $\gamma(0) = (1, \sin 1)$ and $\gamma (1) = (0,0)$. Let $x(t)$ and $y(t)$ 
+        be the coordinates of $\gamma(t)$, note that these are continuous maps 
+        with $x \colon [0,1] \to [0, \infty)$, $y \colon [0,1] \to [-1,1]$. 
+        Let (note that the set is nonempty since $x(1) = 0$)
+        $$a := \inf \set{t \geq 0 \colon x(t) = 0}$$
+        By continuity of $x$ in $\R$, we know that 
+        $$x(a) = 0$$
+        As $t \uparrow a$, we must have that 
+        $$x(t) \downarrow 0, \quad  y(t) \to y(a)$$
+        \textbf{Claim:} $\forall b \in [-1,1]$, $\exists t_n \uparrow a$ s.t 
+        $$y(t_n) \to b$$
+        Contradiction to the convergence of $y(t) \to y(a)$.
+        
+        \textbf{Proof of the claim:} Let $\theta = \arcsin b \in [- \pi / 2, \pi/2]$. Note: for $t < a$, 
+        $x(t) > a \implies y(t) = \sin (1/ x(t))$. For each $n$, consider the interval $(a - a/n, a)$. Pick 
+        $m_n$ s.t, $0 < \frac{1}{2 \pi m_n} < x (a - a/n)$. Then, by the IVT, $\exists t_n \in (a-a/n, a)$ st 
+        $$x(t_n) = \frac{1}{2 \pi m_n + \theta}$$
+        Notice that 
+        $$y(t_n) = \sin \frac{1}{x(t_n)} = \sin (2 \pi m_n + \theta) = b$$ 
+    \end{proof}
+\end{example}
+
+\section{Compactness}
+\begin{definition}
+    Let $X$ be a topological space and let $E \subseteq X$.
+     \begin{itemize}
+        \item We define a \emph{cover} of $E$ in 
+        $X$ to be a family $\mathcal{U} \subset 2^X$ s.t 
+        $$\bigcup_{A \in \mathcal{U}}  A \supseteq E$$
+        \item If every $A$ in $\mathcal{U}$ is open, we call $\mathcal{U}$ an \emph{open cover}. 
+        \item A subcover of $\mathcal{U}$ of $E$ is a subfamily $\mathcal{U}' \subseteq \mathcal{U}$ which is again a cover.  
+    \end{itemize}
+\end{definition}
+
+\begin{definition}
+    A space $X$ is said to be \emph{compact} iff every open cover of $X$ has a finite subcover.
+\end{definition}
+
+\begin{example}
+    \begin{itemize}
+        \item $\R$ is not compact: let 
+        $$\mathcal{U} = \set{(-n, n) \subset \R \colon \ n \in \N}$$
+        This is an open cover of $\R$ but it has no finite subcover. 
+
+        \item $[0,1]$ is compact. 
+        \begin{proof}
+            Let $\mathcal{U}$ be an open cover of $[0,1]$. Let 
+            $$S := \set{x \in [0,1] \mid \ [0,x] \text{ has a finite subcover of $\mathcal{U}$}}$$
+            Note that this set is not empty since $0 \in S$. Furthermore, if $x \in S$ and 
+            $y \in [0,x]$
+            Then $y \in S$. Therefore $S$ is an interval. Take 
+            $$e := \sup S \leq 1$$
+            Then $[0,e)$ is a subset of $S$. Observe that $e \in S$, since we only have to add one more open set namely 
+            $A^* \in \mathcal{U}$ s.t $A^* \ni e$. But $e$ must be one since o.w we would get 
+            $$e + \varepsilon \in A^* \implies e + \varepsilon \in S $$
+        \end{proof}
+
+        \item $\set{0,1}^\N, [0,1]^\N, [0,1]^\R$ are compact. 
+        \item $S^1, S^n$ are compact
+        \item Cantor space is compact. 
+    \end{itemize}
+\end{example}
+
+\begin{proposition}
+    If $X$ is compact and $E \subseteq X$ closed, therefore 
+    $$E \text{ is compact}$$
+\end{proposition}
+
+\begin{proof}
+    Let $\mathcal{U}$ be an open cover of $E$ in $X$. Then
+    $$\mathcal{U}' = \mathcal{U} \cup \set{X \setminus E}$$
+    is an open cover of $E$     
+\end{proof}
+Note: the converse is not true in general (trivial topology). 
+
+\begin{proposition}
+    Suppose that $X$ is Hausdorff, $E$ compact; then 
+    $$E \text{ is closed in $X$}$$
+\end{proposition}
+
+\begin{proof}
+    Let $x \in X \setminus E$, we show that $\exists U \ni x$ open neighborhood s.t 
+    $$U \cap E = \varnothing$$
+    Since $X$ is Hausdorff, $\forall y \in E$ we have that $y \neq x$ hence we can find an open neighborhood of $V_y \ni x, \ W_y \ni y$ s.t 
+    $$V_y \cap W_y = \varnothing$$
+    Now 
+    $$S = \set{W_y \colon y \in E} \text{ is an open cover of $E$}$$
+    Since $E$ is compact, we have $S$ has a finite subcover: there exists $I \subset E$ finite s.t 
+    $$\bigcup_{y \in I} W_I \supseteq E$$
+    Let 
+    $$W := \bigcup_{y \in I} V_y, \quad x \in W$$
+    open (finite intersection of opens) s.t 
+    $$W \cap E = \varnothing$$
+\end{proof}
+
+\begin{proposition}
+    Let $X$ be Hausdorff and $E, F \subset X$ be disjoint and compact. Then $\exists N \supset E$ and $M \supset F$ open sets s.t 
+    $$M \cap N = \varnothing$$
+\end{proposition}
+
+\begin{proof}
+    Use the trick above twice. 
+\end{proof}
+
+\begin{proposition}
+    Let $f \colon X \to Y$ be continuous, with $X$ compact. Therefore 
+    $$f(X) \subseteq Y \text{ is compact}$$
+\end{proposition}
+
+\begin{theorem}[Tychonoff]
+    The product of any family of compact spaces is compact (with the product topology). I.e let $X_i \ (i \in I)$ be compact spaces, then 
+    $$\prod_{i \in I} X_i \text{ is compact}$$
+\end{theorem}
+
+\begin{example}
+    \begin{itemize}
+        \item Any closed hypercube $[0,1]^n \subset \R^n$ is compact. 
+        \item $\set{0,1}^\N$ is compact. 
+        \item $S^1 \times S^1$ the torus. 
+        \item $[0,1]^\R$ is compact. 
+    \end{itemize}
+\end{example}
+
+\begin{proof}
+    For now, we will only prove this in the case of two spaces. Let $X, Y$ be compact spaces we want to show that $X \times Y$ is compact. 
+    Let $\mathcal{C}$ be an open cover of $X \times Y$. For any $y \in Y$ define $X_y := X \times \set{y}$.
+    Note: 
+    $$X_y \cong X \implies X_y \text{ is compact}, \quad \mathcal{C} \supseteq X_y$$
+    Therefore $\exists \mathcal{C}^0_y \subset \mathcal{C}$ finite subcover of $X_y$. 
+    Let $V_y := \bigcup_{A \subset \mathcal{C}^0_y}$ with $V_y \text{ open}$. \\
+    \textbf{Claim:} $\exists B_y \ni y$ open s.t $X_y \subset X \times B_y \subset V_y$. \\
+    Assuming the claim holds, we have that 
+    $$\mathcal{E} := \set{B_y \colon y \in Y}$$
+    is an open cover of $Y$; hence $\mathcal{E}$ has a finite subcover. Hence $\exists Y^0 \subset Y$ s.t 
+    $$\mathcal{E}^0 := \set{B_y \colon y \in Y} \text{ covers $Y$}$$
+    Therefore 
+    $$X \times Y \subseteq \bigcup_{y \in Y^0} X \times B_y \subset \bigcup_{y \in Y^0} V_y \subset \bigcup_{y \in Y^0} \bigcup_{A \in \mathcal{C}^0} A$$
+    Hence  
+    $$\mathcal{C}^0 := \bigcup_{y \in Y^0} \mathcal{C}^0_y \text{ is a finite subcover}$$
+
+    \textbf{Proof of the claim:} Since $V_y$ is open; $\forall x \in X$ since $(x,y) \in V_y$ then $\exists$ open $I_{x,y} \subset X$ and $J_{x,y} \subset Y$ s.t 
+    $$(x,y) \in I_{x,y} \times J_{x,y} \subset V_y$$
+    Now 
+    $$D_y := \set{I_{x,y} \times J_{x,y} \colon x \in X}$$
+    open cover of $X_y$; by compactness $\exists$ a finite subcover of $D_y$ that covers $X_y$. Now you can take 
+    $$B_y = \bigcap_{y \text{ in that finite subcover}} J_{x,y}$$
+    Hence $B_y$ open with $X \times B_y \subset V_y$ 
+\end{proof}
+
+\begin{proposition}
+    Let $B$ be a basis for the topology of $X$ and $E \subseteq X$, then 
+    $$E \text{ compact iff every $0$-cover of $E$ has a finite-subcover} $$
+\end{proposition}
+
+\begin{theorem}[Alexander subbasis theorem]
+    Let $S$ be a subbasis for the topology of $X$ and $E \subset X$; then $E$ is compact iff 
+    every $S$-cover of $E$ has a finite subcover. 
+\end{theorem}
+
+\begin{example}
+    \begin{itemize}
+        \item $[0,1]$ is compact; with $S = \set{(-\infty, b)} \cup \set{(a, \infty)}$. 
+        \item Tychonoff's theorem (general case). Suppose $X_i \ (i \in I)$ are compact sets. Let $X := \prod_{i \in I} X_i$. 
+        Recall 
+        $$S = \set{\pi^{-1}_i (U) \colon i \in I, U \subset X_i \text{ open}}$$
+        Let $C := \set{\pi_i^{-1} (U) \colon i \in I, \ U \in \mathcal{U}_i}$ be an $S$-cover of $X$. we have two cases
+        \begin{enumerate}
+            \item $\exists i \in I$ s.t $\mathcal{U}_i$ is a cover of $X_i$; trivial. 
+            \item $\forall i \in I$, $\exists x_i \in X_i$ s.t 
+            $$x_i \not\in \bigcup{U \in \mathcal{U}_i} U$$
+            Fix such and $x_i$ for each $i \in I$; let 
+            $$x := (x_i)_{i \in I}$$
+            Then $x$ is not covered by $C$; contradiction. 
+        \end{enumerate}
+        Therefore $C$ has a finite $S$-subcover. 
+    \end{itemize}
+\end{example}
+
+\subsection{Convergence and compactness in terms of sequences. }
+For $E \subset \R^n$ the following are all equivalent: 
+\begin{itemize}
+    \item Every open cover of $E$ has a finite subcover. 
+    \item Every sequence in $E$ has a convergent subsequence. 
+    \item $E$ is closed and bounded. 
+\end{itemize}
+
+\begin{remark}
+    For general spaces; $I$ and $II$ are not equivalent. Look at 
+    $$\set{0,1}^\R$$
+    it is compact; but not sequentially compact. Think about this. 
+
+    Conversely 
+    $$\set{x \in \set{0,1}^\R \colon x_i = 0 \text{ for all but countably many $i$'s}}$$
+    is sequentially compact but not compact.
+\end{remark}
+\begin{theorem}
+    Let $X$ be a metrizable space. Then $X$ is compact iff $X$ is sequentially compact.
+\end{theorem}
+
+\begin{proof}
+    Fix a metric $d$ inducing the topology on $X$.
+
+    \begin{itemize}
+
+    %%%%%%%%%%%%%%%  <= direction
+    \item[$\impliedby$] 
+    Suppose $X$ is sequentially compact and let $\mathcal{U}$ be an open cover of $X$.
+
+    \medskip
+    \noindent\textbf{Claim 1:} 
+    There exists $\varepsilon>0$ such that for every $x\in X$ there exists 
+    $A\in\mathcal{U}$ with
+    \[
+        B_\varepsilon(x)\subseteq A.
+    \]
+
+    \medskip
+    \noindent\textbf{Claim 2:}
+    For every $\varepsilon>0$, the space $X$ can be covered by finitely many
+    $\varepsilon$-balls.
+
+    \medskip
+    \noindent\textbf{Proof of Claim 2:}
+    Suppose not. Then for some fixed $\varepsilon>0$, $X$ cannot be covered by finitely many
+    $\varepsilon$-balls.
+
+    We inductively construct a sequence $(x_n)$ with the property that for
+    $i\neq j$,
+    \[
+        d(x_i,x_j)\ge \varepsilon.
+    \]
+
+    Pick any $x_1\in X$.  
+    Having chosen $x_1,\ldots,x_{n-1}$, since
+    \[
+        X\neq \bigcup_{i=1}^{n-1} B_\varepsilon(x_i)
+    \]
+    by assumption, pick
+    \[
+        x_n\in X\setminus \bigcup_{i=1}^{n-1}B_\varepsilon(x_i).
+    \]
+
+    Then for each $i<j$ we have $d(x_i,x_j)\ge \varepsilon$, so the sequence
+    $(x_n)$ has no Cauchy subsequence. In a metric space, every convergent
+    subsequence is Cauchy; hence $(x_n)$ has no convergent subsequence. This
+    contradicts sequential compactness of $X$. Therefore Claim 2 holds.
+
+    \medskip
+    \noindent\textbf{Proof of Claim 1:}
+    Suppose not. Then for each $n\in\mathbb{N}$ there exists $x_n\in X$ such that
+    \[
+        B_{1/n}(x_n) \text{ is not contained in any element of } \mathcal{U}.
+    \]
+
+    Since $X$ is sequentially compact, the sequence $(x_n)$ has a convergent
+    subsequence $(x_{n_k})$ with limit $x\in X$. Because $\mathcal{U}$ covers
+    $X$, pick $A\in\mathcal{U}$ with $x\in A$. Since $A$ is open, choose
+    $\varepsilon>0$ with
+    \[
+        B_\varepsilon(x)\subseteq A.
+    \]
+
+    Since $x_{n_k}\to x$, pick $k$ large enough so that
+    \[
+        d(x_{n_k},x)<\varepsilon/2.
+    \]
+    Also, since $n_k\to\infty$, pick $k$ so large that
+    \[
+        1/n_k < \varepsilon/2.
+    \]
+
+    For such $k$, any $y\in B_{1/n_k}(x_{n_k})$ satisfies
+    \[
+        d(y,x)\le d(y,x_{n_k}) + d(x_{n_k},x) < \frac{1}{n_k} + \frac{\varepsilon}{2}
+        < \frac{\varepsilon}{2} + \frac{\varepsilon}{2} = \varepsilon.
+    \]
+    Thus
+    \[
+        B_{1/n_k}(x_{n_k})\subseteq B_\varepsilon(x)\subseteq A,
+    \]
+    contradicting the choice of $x_{n_k}$. Hence Claim 1 holds.
+
+    \medskip
+    \noindent\textbf{Finish:}
+    By Claim 1, choose $\varepsilon>0$ with the property that every
+    $\varepsilon$-ball is contained in some $A\in\mathcal{U}$.  
+    By Claim 2, finitely many $\varepsilon$-balls cover $X$.  
+    Replacing each ball by a corresponding $A\in\mathcal{U}$ still yields a finite
+    subcover of $\mathcal{U}$. Therefore $X$ is compact.
+
+    %%%%%%%%%%%%%%%  => direction
+    \medskip
+    \item[$\implies$]
+    Now assume $X$ is compact.  
+    Let $(x_n)$ be a sequence in $X$.
+
+    If the set $\{x_n:n\in\mathbb{N}\}$ is finite, some value occurs infinitely
+    many times, giving a constant (hence convergent) subsequence.
+
+    If the set is infinite, then since $X$ is compact, every infinite subset has
+    a limit point. Let $x$ be such a limit point. Because $X$ is metrizable,
+    choose a sequence of neighborhoods $B_{1/k}(x)$. Each contains infinitely
+    many terms of $(x_n)$ by definition of limit point. Pick inductively
+    \[
+        n_1 < n_2 < \cdots
+    \]
+    with $x_{n_k}\in B_{1/k}(x)$. Then
+    \[
+        d(x_{n_k},x)<1/k,
+    \]
+    so $x_{n_k}\to x$. Hence $(x_n)$ has a convergent subsequence.  
+    Therefore $X$ is sequentially compact.
+
+    \end{itemize}
+\end{proof}
+
+
+\begin{theorem}
+    Moreover for a metric space $X$, $E \subseteq X$
+    $$E \text{ compact} \iff E \text{ complete and totally bounded}$$
+    where totally bounded = $\forall \varepsilon > 0$, $E$ can be covered by finitely many $\varepsilon$-balls. 
+\end{theorem}
+
+\begin{theorem}
+    Lebesgue (number) covering lemma; let $X$ be a compact \emph{metric} space and $U$ an open cover. There exists a $\delta > 0$ s.t 
+    if $C \subseteq X$ is a set with diameter less than $\delta$, than $C \subseteq A$ for some $A \in U$.
+    
+    $\delta$ is said to be a Lebsegue number for $U$. 
+\end{theorem}
+
+\paragraph{Compactness in terms of closed sets} 
+\begin{definition}
+    A family $\mathcal{C}$ of subsets of $X$ has the \emph{finite intersection property} (FIP), iff every 
+    finite subfamily of $\mathcal{C}$ has nonempty intersection. 
+\end{definition}
+
+\begin{proposition}
+    Let $X$ be a topological space, then $X$ is compact iff for every family $\mathcal{C} \subseteq 2^X$ of closed sets 
+    with the FIP, has nonempty intersection. 
+\end{proposition}
+
+\begin{corollary}
+    Let $X$ be compact, then the intersection of every nested sequence of nonempty closed sets in $X$ is non-empty 
+    $$C_1 \supseteq C_2 \supseteq \cdots$$
+\end{corollary}
+
+\begin{theorem}[Compactness theorem] 
+    Let $\mathcal{X}$ be a collection of boolean variables, and let $\mathcal{S}$ be a collection of propositions. If every finite subfamily is satisfiable, 
+    then $\mathcal{S}$ is satisfiable.     
+\end{theorem}
+
+\begin{theorem}[The extreme value theorem]
+    Let $X$ be a compact space, and $f \colon X \to \R$ continuous; then $f$ admits a minimum and a maximum. 
+\end{theorem}
+
+\begin{proposition}
+    Let $f$ be a continuous bijection with $X$ compact $Y$ Hausdorff, then 
+    $$f \text{ is a Homeomorphism}$$
+\end{proposition}
+
+\begin{example}
+    We want to show that $\mathcal{C}$ (the cantor set) is Homeomorphic to $\set{0,1}^\N$. Define 
+    $$\varphi \colon \set{0,1}^\N \to \mathcal{C}, \quad \varphi (x_1,x_2,\cdots) = \sum_{n=1}^{\infty} (\frac{2}{3})^n x_n$$
+    Note that this is basically a way of "addressing" the points in $\mathcal{C}$ by the "infinite path from root to leaf".  
+    By the proposition above; it is enough to show that $\varphi$ is continuous and bijective; exercise.
+\end{example}
+
+\begin{proposition}
+    Let $X,Y$ metric spaces; $f \colon X \to Y$ continuous; $X$ compact. Therefore 
+    $$f \text{ is uniformly continuous}$$
+\end{proposition}
+
+\begin{proof}
+    Let $\varepsilon > 0$, since $f$ continuous: $\forall z \in X$ $\exists \delta_z > 0$ s.t 
+    $$f (B_{\delta_z} (z)) \subseteq B_\varepsilon (f(z))$$
+    Note that we have the following open cover of $X$
+    $$\mathcal{U} = \set{B_{\delta_z} (z) \colon z \in X}$$
+    Let $\delta > 0$ be a Lebesgue of $\mathcal{U}$. Let $x,y \in X$ be s.t 
+    $$d(x,y) < \delta$$
+    since 
+    $$\operatorname{diam} (\set{x,y}) < \delta$$
+    $\exists z \in X$ s.t 
+    $$\set{x,y} \subseteq B_{\delta_z} (z)$$
+    Hence 
+    $$d(x,z), d(y,z) < \delta_z$$
+    Hence 
+    $$d(f(x),f(z)), d(f(y),f(z)) < \varepsilon \implies d(f(x), f(y)) < 2 \varepsilon$$
+\end{proof}
+
+\subsection{Local compactness} 
+\begin{definition}
+    $X$ is said to be \emph{locally compact} if every point $x \in X$ has a compact neighborhood. 
+\end{definition}
+
+\textbf{Recall.} $\mathcal{B} \subseteq 2^X$ is a neighborhood basis for $x$ iff for every open $N \ni x$, $\exists B \in \mathcal{B}$ s.t 
+$$x \in B \subseteq N$$
+
+\begin{proposition}
+    Let $X$ be Hausdorff, then $X$ is locally compact iff every point $x \in X$ has a neighborhood basis consisting of compact sets. 
+\end{proposition}
+
+\begin{lemma}
+    Let $X$ be Hausdorff and let $A, B \subseteq X$ be disjoint and compact; then $\exists N \supseteq A$ open s.t 
+    $$\overline{N} \cap B = \emptyset$$
+    
+    Especially, $\forall x \in X$ $\forall$ compact $B \not\ni x$, $\exists N \ni x$ open s.t 
+    $$\overline{N} \cap B = \emptyset$$
+\end{lemma}
+
+\begin{proof}[Proof of the original prop]
+    \mbox{}\\
+    \begin{itemize}
+        \item[$\implies$] Let $X$ be locally compact, $A \ni x$ an open neighborhood; we need to find some compact set $D \subseteq A$. By local compactness; we know that 
+        $\exists C \ni x$ compact neighborhood. Wlog $A \subseteq C$ (replace $N$ by $N \cap C$); then 
+        $$C \setminus A \text{ closed in $C$}$$
+        Since $X$ (and hence $C$) is Hausdorff, we know that $C \setminus N$ is compact with $x \not\in C \setminus N$; therefore by the lemma, $\exists N \ni x$ open s.t 
+        $$\overline{N} \cap (C \setminus A) = \emptyset$$
+        Let 
+        $$D := N \cap \mathring{C}$$
+        Notice that 
+        \begin{align*}
+            x &\in D \\
+            D &\text{ is open} \\
+            \overline{D} &\text{ is compact} \\
+            \overline{D} &\subseteq A
+        \end{align*}
+        Where the last point is obtained since 
+        $$\overline{N} \cap C \cap A^c \implies \overline{N} \cap C \subseteq A$$
+        but $\overline{D}:= \overline{N \cap \mathring{C}} \subseteq \overline{N} \cap C \subseteq A$. 
+    \end{itemize}    
+\end{proof}
+
+%send to soumaille
+\begin{proposition}
+    Let $X$ be locally compact Hausdorff. 
+    \begin{enumerate}[label = \alph*)]
+        \item $A \subseteq X$ closed $\implies$ $A$ locally compact 
+        \item $B \subseteq X$ open $\implies$ $B$ locally compact 
+        \item $A,B \subseteq X$ locally compact $\implies A \cap B$ locally compact. 
+    \end{enumerate}
+\end{proposition}
+
+\begin{proof}
+    \begin{enumerate}[label = \alph*)]
+        \item Let $x \in A$ and $K \ni x$ be a compact neighborhood of $x$ in $X$. Then 
+        $$A \cap K \text{ is compact with } a \in A \cap \mathring{K}$$
+
+        \item Let $x \in B$ and $K \ni X$ a compact neighborhood in $X$. By the lemma, $\exists$ open $V \ni x$ s.t 
+        $$\overline{V} \subseteq B$$
+        Since $X$ is locally compact and Hausdorff, $\exists$ compact set $K$ s.t $x \in \mathring{K}$ s.t 
+        $$K \subseteq V \subseteq B$$
+        Such a $K$ is a compact neighborhood of $x$ in $B$. 
+        
+        \item Let $x \in A \cap B$, hence $\exists$ compact $K_A \subseteq A, \ K_B \subseteq B$, $\exists$ open $U, V \subseteq X$ s.t 
+        $$x \in U \cap A \subseteq K_A, \quad x \in V \cap B \subseteq K_B$$
+        Hence $x \in (U \cap A) \cap (V \cap B) \subseteq K_A \cap K_B \subseteq A \cap B$. Hence 
+        $K_A \cap K_B$ is a compact neighborhood of $x$ in $A \cap B$.
+    \end{enumerate}
+\end{proof}
+
+\begin{definition}
+    A map $f \colon X \to Y$ is an open map if its maps open sets to open sets. 
+\end{definition}
+
+\begin{proposition}
+    if $X$ locally compact and $f \colon X \to Y$ continuous and open; then $f(X)$ is locally compact.   
+\end{proposition}
+
+\begin{proposition}
+    Let $y \in f(X)$, Take $x \in X$ s.t $f(x) = y$. Let $C \ni x$ be a compact neighborhood of $x$, then 
+    $$f(C) \text{ compact}$$
+    $$f(\mathring{C}) \text{ open}$$
+    $$y \in f(\mathring{C}) \subseteq f(C)$$
+    So $f(C)$ is a compact neighborhood of $y$.    
+\end{proposition}
+
+\subsection{Compactification}
+\begin{example}
+    $\R$ is not compact, construct $\R^* = \R \cup \set{\infty}$ we still have to define the topology on $\R^*$. 
+    Notice that 
+    $$\R \cong S^1 \setminus \set{p}$$
+    "Just add $p$ back, it will correspond to $\infty$" 
+    Then 
+    $$\R^* \cong S^1$$
+    The same exact reasoning for $\R^n \cong S^n \setminus \set{p}$. 
+\end{example} 
+
+\begin{definition}
+    A \emph{compactification} of a top. space $X$ is an \emph{embedding} (Homeomorphism onto the image) $\varphi \colon X \to \hat{X}$ into a compact Hausdorff space 
+    s.t 
+    $$\varphi(X) \text{ is dense in $\hat{X}$}$$
+\end{definition}
+
+\paragraph{One point compactification}
+$X$ Hausdorff, locally compact, non-compact: 
+$$X^* := X \cup \set{\infty}, \quad \varphi^* \colon X \to X^*, \quad \varphi^*(x) = x$$
+The topology on $X^*$ 
+$$\tau^* = \tau \cup \set{X^* \setminus C \colon C \subseteq X \text{ compact}}$$
+verify that this is a valid topology, $X^*$ compact and Hausdorff. 
+
+\begin{theorem}
+    Let $X$ be a non-compact, locally compact Hausdorff space. Let $(\hat{X}, \varphi)$ be a compactification of $X$. 
+    \begin{enumerate}[label = (\alph*)]
+        \item $\exists$ quotient map $h \colon \hat{X} \to X^*$ s.t 
+        $$h \circ \varphi = \varphi^*$$
+        \[
+            \begin{tikzcd}
+                X \arrow[r, "\varphi"] \arrow[dr, swap, "\varphi^*"] & \hat{X} \arrow[d, "h"] \\
+                & X^*
+            \end{tikzcd}
+        \]
+
+        \item Furthermore $(\hat{X}, \varphi)$ is a one-point compactification. Then $h$ can be chosen to be a homeomorphism. 
+    \end{enumerate}
+\end{theorem}
+
+\begin{proof}
+    \begin{enumerate}[label = \alph*)]
+        \item 
+        \[
+            h(\hat{x}) =
+            \begin{cases}
+                \varphi^* \bigl(\varphi^{-1}(\hat{x})\bigr) & \text{if } \hat{x} \in \varphi(X),\\
+                \infty & \text{otherwise.}
+            \end{cases}
+        \]
+
+        \item the $h$ above is a Homeomorphism. 
+    \end{enumerate}
+\end{proof}
+
+\begin{definition}
+    A topological space $X$ is said to be \emph{completely regular} iff 
+    \begin{itemize}
+        \item $X$ is Hausdorff
+        \item For each $p$ and $\forall A \not\ni p$ closed can be separated by some continuous function.\\
+        i.e $\exists f \colon \ X \to [0,1]$ s.t 
+        $$f(p) = 0, \quad f(x) = 1 \ \forall x \in A$$
+    \end{itemize}
+    Note: Complete regularity can be proven to be sufficient for the existence of any compactification. 
+\end{definition}
+
+\begin{proposition}
+    If we are able to embed a topological space $X$ 
+    $$\psi \colon X \to [0,1]^J$$
+    Define 
+    $$\beta X := \overline{\psi(X)} \subseteq [0,1]^J$$
+    Then 
+    $$(\beta X, \psi) \text{ is a (Stone-\v{C}ech) compactification of $X$}$$
+\end{proposition}
+
+\begin{theorem}[A necessary and sufficient condition for the existence of such an embedding]
+    \mbox{}\\
+    $X$ is \emph{completely regular} iff such an embedding exists. 
+\end{theorem}
+
+\begin{proposition}
+    Suppose we have 
+    $$X \xrightarrow{\psi} \beta X$$
+    $$\downarrow f$$
+    $$Y$$
+    $\exists h \colon \beta X  \to Y$, then $\forall x \in X$ we have that 
+    $$f(x) = h(\psi(x))$$
+\end{proposition}
+
+\begin{example}
+    Some compactifications
+    \begin{itemize}
+        \item $\R \to \beta \R \cong [-\infty, \infty] \cong [0,1]$
+        \item $\N \to \beta \N \cong \set{1/n}_{\N} \cup \set{0} \subseteq [0,1]$
+    \end{itemize}
+\end{example}
+
+\begin{theorem}
+    The countable product of Sequentially compact spaces is sequentially compact. i.e 
+    $$X_1, X_2, \cdots \text{ sequentially compact} \implies \prod_{k=1}^\infty$$
+\end{theorem} 
+
+\begin{proof}
+    Say we have some sequence $(x^{(1)}), (x^{(2)}), \cdots$ be a sequence in $X := \prod_{k=1}^\infty X_k$. 
+    \begin{align*}
+        (x^{(1)}) &= x_1^{(1)} x_2^{(1)} \cdots\\
+        (x^{(2)}) &= x_1^{(2)} x_2^{(2)} \cdots\\
+        (x^{(3)}) &= x_2^{(3)} x_2^{(3)} \cdots\\
+        &\vdots
+    \end{align*}
+    Since $X_1$ is sequentially compact, $\exists I_1 \subset \N$ infinite s.t 
+    $$x_1^{(n)} \to y_1 \in X_1 \quad \text{ as } n \to \infty \in I_1$$
+    Since $X_2$ is compact; chose $I_2 \subseteq I_1$ infinite s.t 
+    $$x_2^{(n)} \to y_2 \in X_2 \quad \text{ as } n \to \infty \in I_2$$
+    Continue similarly for all $k \in \N$. \\
+    This gives us 
+    $$I_1 \supseteq I_2 \supseteq \cdots \quad \text{ all infinite}$$
+    and 
+    $$y = y_1 y_2 \cdots$$
+    then for every $k \in I_k$ the $k$'th coordinate converges to $y_k$. Define 
+    \begin{align*}
+        n_1 &:= \min I_1 \\
+        n_2 &:= \min I_2 \setminus \set{n_1} \\ 
+        &\vdots
+    \end{align*}
+    Then at each $k$, for $l > k$ we have that $n_l \in I_l \subseteq I_k$; hence 
+    $$x_n^{(k)} \to y_k, \ n \in I$$
+    Hence 
+    $$(x)^{n} \to y$$
+\end{proof}
+
+\section{Separation \& Countability conditions} 
+\subsection{Separation}
+A space is 
+\begin{itemize}
+    \item[$T_2$] \textbf{Hausdorff:} iff $\forall x, y \in X$, $x \neq y$ $\exists$ open $A \ni x$, $B \ni y$ s.t 
+    $A \cap B = \emptyset$. 
+
+    \item[$T_3$] \textbf{Regular:} iff \begin{enumerate}
+        \item $\forall x \in X$ $\forall C \subseteq X$ closed, $x \not\in C$; $\exists$ open $A \ni x$ $B \supseteq C$, $A \cap B \neq \emptyset$. 
+        \item Singletons are closed (iff Hausdorff)
+    \end{enumerate}
+
+    \item[$T_4$] \textbf{Normal:} iff \begin{enumerate}
+        \item $\forall$ closed $C, D \subseteq X$, $C \cap D = \varnothing$, $\exists$ open sets $A \supseteq C$, $B \supseteq D$, $A \cap B = \varnothing$. 
+        \item Singletons are closed. 
+    \end{enumerate}
+
+    \item[$T_{3.5}$] \textbf{Completely regular} iff \begin{enumerate}
+        \item $\forall x \in X$ $\forall$ closed $C \subseteq X$, $x \not\in C$ $\exists$ continuous $f \colon X \to [0,1]$ s.t 
+        $$f(x) = 0, f(y) = 1 \quad \forall y \in C$$
+        \item Singletons are closed. 
+    \end{enumerate}
+
+    \item[$T_1$] $\forall x, y \ x \neq y$ we can find $U \ni x$ open s.t $y \not\in U$
+    \item[$T_0$] $\forall x, y \ x \neq y$ we can find $U \ni x$ open s.t $y \not\in U$ or $V \ni y$ open s.t $x \not\in V$.  
+\end{itemize}
+
+Note that 
+$$T_4 \implies T_{3.5} \implies T_3 \implies T_2 \implies T_1 \implies T_0$$
+We get $T_4 \implies T_{3.5}$ by Urysohn's lemma. 
+
+\begin{example}
+    \begin{itemize}
+        \item $\R$ is normal (nontrivial so far)
+        \item Every compact Hausdorff space is normal. 
+        \item $(0,1)^\R$ is regular but not normal (needs proof). 
+        \item $\R$ with subbasis the Euclidean top + set of rationals is Hausdorff but not regular. 
+    \end{itemize}
+\end{example}
+
+\subsection{Countability} 
+A space is 
+\begin{itemize}
+    \item \textbf{First countable} if every point has a countable neighborhood basis. 
+    \item \textbf{Second countable} if the space has a countable basis. 
+    \item \textbf{Separable} if it has a countable dense set. 
+\end{itemize}
+
+\begin{example}
+    \begin{itemize}
+        \item $\R$ is second countable and separable. 
+        \item Every metrizable space is first countable. 
+        \item $\R / \Z$ is not first countable at $[\Z]$. 
+        \item $\set{0,1}^\R$ is not first countable. 
+        \item $\R$ with the discrete topology is first countable but not second countable. 
+        \item $X$ compact metric $ \implies C(X, \R)$ is separable w.r.t the uniform topology.  
+    \end{itemize}
+\end{example}
+
+\begin{table}[H]
+        \begin{tabular}{c|ccc}
+            & Subspaces & Product & Quotient \\
+            \hline
+            Hausdorff & Yes & Yes & No \\
+            Regular & Yes & Yes & No\\ 
+            Normal & No & No & No \\
+            First Countable & Yes & Only Countable & No\\
+            Second Countable & Yes & Only Countable & No\\
+            Separable & No & Only continuous & Yes 
+        \end{tabular}
+\end{table}
+Notice that $(0,1)$ is normal whereas $(0,1)^\R$ is not normal and $[0,1]^\R$. \\
+Notice that $[0,1]$ with $\tau = \set{\emptyset} \cup \set{A \subseteq X \colon A \ni 0}$ is clearly separable and $(0,1]$ isn't. 
+
+\paragraph{Some Implications} 
+\begin{proposition}
+    $X$ is metrizable $\implies$ $X$ Is first countable. 
+\end{proposition}
+
+\begin{proposition}
+    $X$ is metrizable and separable $\implies$ $X$ is second countable 
+\end{proposition}
+
+\begin{proposition}
+    $X$ second countable $\implies$ $X$ separable. 
+\end{proposition}
+
+\begin{proposition}
+    $X$ compact and Hausdorff $\implies$ $X$ normal. 
+\end{proposition}
+
+\begin{proposition}
+    $X$ is metrizable $\implies$ $X$ is normal. 
+\end{proposition}
+
+\begin{proof}
+    Fix some metric $d$ that generates the topology of $X$. Let $P, Q \subseteq X$ be disjoint closed sets. If $\varnothing \in \set{P,Q}$ this is trivial. \\
+    For every $x \in P$ chose $\varepsilon_x$ s.t $B_{\varepsilon_x}(x) \cap Q = \varnothing$; do the same for every $y \in Q$ s.t 
+    $B_{\delta_y}(y) \cap P = \varnothing$. Notice that $\forall x \in P, \ \forall y \in Q$ $B_{\varepsilon_x/3} \cap (x) B_{\delta_y / 3} = \varnothing$.  
+\end{proof}
+
+\begin{proposition}
+    $X$ is regular and second countable $\implies$ $X$ is normal.
+\end{proposition}
+
+\begin{proof}
+    Let $A, B \subset X$ closed s.t $A \cap B = \varnothing$. Assume $A, B \neq \varnothing$. Let $\beta$ be a countable basis for $X$. 
+    By regularity, $\forall x \in X$ $\exists$ open $U_x, W_x$ s.t 
+    $$x \in U_x, \quad B \subseteq W_x, \quad U_x \cap W_x = \varnothing$$
+    Since $\beta$ is a basis; we can chose 
+    $$F_x \in \beta \text{ s.t } x \in F_x \subseteq U_x$$
+    Note: $\overline{F_x}$ doesn't intersect $B$. Since $\beta$ is countable clearly 
+    $$\set{F_x}_{x \in X} \text{ is countable}$$
+    Hence $\exists F_1, F_2, \cdots$ s.t 
+    $$\bigcup_{n=1}^\infty F_n \supseteq A,\quad \forall n \ \overline{F_n} \cap B = \varnothing$$
+    Similarly, $\exists G_1, G_2, \cdots$ s.t 
+    $$\bigcup_{n \in \N} G_n \supseteq B, \quad \forall n \ \overline{G_n} \cap A = 0$$
+    Recursively define: \\
+    $$F_1' := F_1 \setminus \overline{G_1}, \quad F_n' := F_n \setminus \bigcup_{i=1}^n \overline{G_i}$$
+    $$G_1' := G_1 \setminus \overline{F_1}, \quad G_n' := G_n \setminus \bigcup_{i=1}^n \overline{F_i}$$
+    Let $\tilde {A} = \bigcup_{n \in \N} F_n'$ and $\tilde{B} := \bigcup{i=1}^n G_n'$; note that they are open, 
+    and cover $A$ and $B$ resp. and that 
+    $$\tilde A \cap \tilde B = \varnothing$$
+    Since if we take $x \in \tilde A \cap \tilde B$ then $\exists n, m, \ n \leq m$ s.t 
+    $$x \in F_n' \cap G_m'$$
+    THerefore $x\in F_n$, but $x \not\in \overline{F_n}$.    
+\end{proof}
+
+\begin{theorem}[Urysonh's Lemma] 
+    Let $X$ be normal; let $A, B \subseteq X$ be disjoint closed sets. Then $\exists$ continuous function $f \colon X \to [0,1]$ s.t 
+    $f(x) = 0$ for $x \in A$ and $f(x) = 1$ for $x \in B$. 
+    
+    Note that the converse is also true. 
+\end{theorem}
+
+\begin{theorem}[Tietze extension theorem] 
+    Let $X$ be normal and $A \subseteq X$ be closed. Every continuous function $f \colon A \to \R$ can be extended to a continuous function on $X$. I.e we can find some $F \colon X \to \R$ s.t 
+    $$F_{|a} = f$$
+    Moreover if $f(A) \subseteq [a,b]$, then we can choose $F$ so that $F(X) \subseteq [a, b]$       
+\end{theorem}
+
+\begin{lemma}
+    $X$ is normal iff $\forall$ disjoint closed $A, B \subseteq X$, $\exists$ open $U \subseteq X$, $A \subseteq U$ s.t 
+    $$\overline{U} \cap B \neq \varnothing$$
+\end{lemma}
+
+\begin{proof}[Proof of Urysohn's lemma]
+    \mbox{}\\
+    Let $U_{1/2}$ be an open set s.t $A \subseteq U_{1/2}$ and $\overline{U_{1/2}} \cap B = \varnothing$. Let $U_{1/4}, \ U_{3/4}$ be open sets s.t 
+    $$A \subseteq U_{1/4}, \ \overline{U_{1/4}} \subseteq U_{1/2}$$
+    $$\overline{U_{1/2}} \subseteq U_{3/4}, \ \overline{U_{3/4}} \cap B = \varnothing$$
+    draw the picture, this makes sense; continue Recursively. \\    
+    We can find $U_{k/2^n}$ open s.t 
+    $$A \subseteq U_{1/2^n} \subset \overline{U_{1/2^n}} \subseteq \cdots \subseteq \overline{U_{k/2^n}} \subseteq U_{(k+1)/2^n} \cdots \subseteq \overline{U_{2^n-1/2^n}} \subseteq X \smallsetminus B$$
+    The indices are dyadic rations, $o < r< 1$ which are dense in $[0,1]$. \\
+    In summary, for each $r \in \Q_2$, $0 < r < 1$ we have some $U_r \subseteq X$ s.t 
+    $$\forall r, \ A \subseteq U_r$$
+    $$\forall r, \ \overline{U_r} \subseteq X \setminus B$$
+    $$r < s \implies \overline{U_r} \subseteq U_s$$
+    Define 
+    $$f(x) := \begin{cases}
+        \operatorname{inf} \set{r \colon x \in U_r} \quad &x \in \bigcup_{0 < r< 1} {U_r} \\
+        1 \quad &\text{o.w}
+    \end{cases}$$
+    Notice that $x \in A \implies f(x) = 0$, $x \in B \implies f(x) = 1$. \\
+    Moreover, notice that $x \in U_r \implies f(x) \leq r$; $x \not\in U_r \implies f(x) \implies f(x) \geq r$; $x \in \overline{U_r} \imlies f(x) \leq r$. 
+    Hence $\forall s > r$ we have that $x \in U_s \implies f(x) \leq s$. 
+    
+    Let $x \in X$ and $\varepsilon > 0$: 
+    \begin{itemize}
+        \item $0 < f(x) < 1$ take $r, s \in \Q_2$ s.t (density)
+        $$0 < f(x) - \varepsilon < r < f(x) < s < f(x) + \varepsilon < 1$$
+        Note: $x \in U_s \setminus \overline{U_r}$ (observations above); which is an open set. Moreover, $\forall y \in U_s \setminus \overline{U_r}$ we have 
+        $r \leq f(y) \geq r$; therefore $f$ is continuous at $x$. 
+
+        \item $f(x) = 0$ do the same. 
+        \item $f(x) = 1$ do the same. 
+    \end{itemize}
+\end{proof}
+
+\subsection{Embedding into cubes, metrization, compactification}
+$$\psi \colon X \to [0,1]^J$$
+\begin{definition}
+    Let $a \in X$ and a closed set $a \not\in B \subseteq X$, $B$ closed. A continuous map $f \colon X \to \R$ separates $a$ from $B$ means that 
+    $$f(a) \not\in \overline{B}$$
+\end{definition}
+
+\begin{definition}
+    A family $\mathcal{F} \subseteq C(X, \R)$ separates points from closed sets if for every $a \in X, B \not\ni a$ closed $\exists f \in \mathcal{F}$ that separates $a$ from $B$.  
+\end{definition}
+
+\begin{remark}
+    Note: $X$ is completely regular, then $C(X, [0,1])$ separates points from closed sets.  
+\end{remark}
+
+\begin{theorem}[Embedding into a cube]
+    \mbox{}\\
+    Let $X$ be a space in which singletons are closed. Let $\mathcal{F} = \set{f_j \in C(X, [0,1])}_{j \in J}$ be a family of continuous maps that separates points from closed sets. 
+    Then
+    $$\psi \colon X \to [0,1]^J, \quad \Psi(x) = (f_j(x))_{j \in J}$$  
+\end{theorem}
+
+\begin{proposition}
+    Suppose that $X$ is regular and second countable. Then there exists a countable family $\mathcal{F} \subset C(X, [0,1])$ that separates points from closed sets. 
+\end{proposition}
+
+\begin{corollary}[Urysohn's metrization theorem]
+    \mbox{}\\
+    Every regular second countable space is metrizable. 
+\end{corollary}
+
+\begin{proof}
+    We need to show that $\psi$ is a Homeomorphism. 
+    \begin{itemize}
+        \item \textbf{$\psi$ is one-to-one.} Let $x, y \iN X$, $x \neq y$. Since $\mathcal{F}$ separates points from open sets, it separates points from points. Pick $j$ s.t 
+        $f_j$ separates $x$ from $y$, then $\psi(x) \neq \psi(y)$. 
+
+        \item \textbf{$\psi$ is continuous.} $f_j$ is continuous. 
+        
+        \item \textbf{$\psi^{-1} \colon \psi(X) \to X$ is continuous.} Let $A \subseteq X$ open, NTS that 
+        $$(\psi^{-1})^{-1} (A) = \psi(A) \quad \text{open in $\psi(X)$}$$
+        Let $w \in \psi(A)$, then $w = \psi(x)$ for some $x \in A$. Since $X \setminus A$ is closed and $a \not\in X \setminus A$. 
+        There exists some $j \in J$ s.t $f_j$ separates $x$ from $X \setminus A$. Hence 
+        $$f_j(x) \not\in \overline{f_j(X \setminus A)}$$
+        Let $\varepsilon > 0$ be s.t $f_j(x) \pm \varepsilon \cap f_j(X \setminus A) = \varnothing$.
+        Define the open set
+        $$W := \pi_j^{-1}(f_j(x) \pm \varepsilon)$$
+        Hence 
+        $$W \cap \psi(X) \quad \text{is open in $\psi(X)$}$$
+        Moreover, 
+        $$W \cap \psi(X) \subseteq \psi(A)$$
+        Since 
+        $$\psi(y) \in W \implies f_j(y) \in f_j(x) \pm \varepsilon \implies \psi(y) \not\in \psi (X \setminus A)$$
+        Moreover 
+        $$w \in W \cap \psi(X)$$
+    \end{itemize}
+\end{proof}
+
+\begin{proof}
+    Note: $X$ is normal. Therefore by Urysohn's lemma, $\forall p \in X$ and $\forall$ closed $Q \subset X$, $Q \not\ni p$ we can find 
+    $$f \in C(X, [0,1])$$
+    that separates $p$ from $Q$. Let $\beta$ be a countable basis, then for each $A, B \in \beta$ with 
+    $$\overline{A} \subset B$$ 
+    Define 
+    $$f_{A,B} \to [0,1], \quad f(\overline{A}) = 0, f(X \setminus B) = 1$$
+    and 
+    $$J := \set{(A, B) \in \beta^2 \colon \overline{A} \subset B}$$
+    \textbf{Claim:} $\mathcal{F} = \set{f_{A,B} \colon (A, B) \in J} \quad \text{separates points from closed sets}$. \\
+    Indeed, let $p \in X$ and $Q \not\ni x$ be closed. Since $Q^c$ is open we can find some $B \subseteq Q^c \in \beta$ s.t $B \ni p$. By regularity of $X$ $\exists A \ni p$, $A \in \beta$ 
+    s.t 
+    $$\overline{A} \subset B$$
+    Then 
+    $$f_{A, B} \quad \text{separates $p$ from $Q$}$$
+\end{proof}
+
+\subsection{Baire spaces}
+Notice that if $X$ a topological space and $A_1, A_2,\cdots, A_n$ are dense open sets; then 
+$$A_1 \cap A_2 \cap \cdots \cap A_n \quad \text{ dense open}$$
+
+\begin{theorem}[Baire's (CH version)] 
+    \mbox{}\\
+    Let $X$ be a compact and Hausdorff space, and let $A_1, A_2, \cdots$ be a countable collection of dense open sets in $X$. Then 
+    $$\bigcap_{n=1}^\infty A_n \quad \text{is dense in $X$}$$
+\end{theorem}
+
+\begin{proof}
+    Let $U \subseteq X$ be non-empty and open. Since $A_1$ is dense and open, $\exists x_1 \in U \cap A_1$. Moreover 
+    $$A_1 \cap U \ni x_1 \text{ is open}$$
+    Since is $X$ is normal (hence regular), 
+    $$X \setminus (A_1 \cap U) \not\ni x_1 \quad \text{ is closed}$$
+    We can find some open neighborhood $V_1 \ni x_1$ s.t 
+    $$\overline{V_1} \subseteq A_1 \cap U$$
+    Moreover, since $A_2$ is dense, do the same thing and find some 
+    $$x_2 \in A_2 \cap V_1, \ V_2 \ni x_2 \text{ s.t } \overline{V_2} \subseteq A_2 \cap V_1$$
+    Repeat this for every $n$; we get some 
+    $$V_n \neq \emptyset, \ \overline{V_n} \subset A_n \cap V_{n-1}$$
+    This gives us 
+    $$V_0 \supseteq \overline{V_1} \supseteq \overline{V_2} \supseteq \cdots, \quad \overline{V_n} \subseteq A_n$$
+    By compactness of $X$ we have that 
+    $$(\bigcap_{n = 1}^\infty A_n) \cap U \supseteq \bigcap_{n = 1}^\infty V_n \neq \varnothing$$
+\end{proof}
+
+\begin{definition}
+    A space $X$ is a \emph{Baire space} if the intersection of every countable family of dense open sets is dense. 
+\end{definition}
+
+\begin{corollary}
+    Compact Hausdorff spaces are Baire. 
+\end{corollary}
+
+\begin{theorem}[Baire, LCH]
+    Every locally compact Hausdorff space is a Baire space.    
+\end{theorem}
+
+\begin{proof}
+    Let $X$ be LCH and not compact, let $X^* = X \cup \set{\infty}$ be a one point compactification of $X$. \\
+    Note: $X$ is both dense and open in $X^*$. \\
+    Let $A_1, A_2, \cdots \subseteq X$ be open and dense: 
+    \begin{itemize}
+        \item $A_n$ is open in $X$ so it must be open in $X^*$. 
+        \item $A_n$ is dense in $X^*$. 
+    \end{itemize}
+    Therefore 
+    $$\bigcap_{n=1}^\infty A_n \quad \text{ is dense in $X^*$}$$
+    Hence it is dense in $X$. 
+\end{proof}
+
+\begin{lemma}
+    Let $X$ be a complete metric space, and let 
+    $$C_1 \supseteq C_2 \supseteq C_3 \supseteq \cdots$$
+    Be nested nonempty closed subsets of $X$ with 
+    $$\operatorname{diam} C_n \to 0 \ \text{ as } n \to \infty$$
+    Then 
+    $$\bigcap_{n=1}^\infty C_n \neq \varnothing$$ 
+\end{lemma}
+
+\begin{proof}
+    exercise
+\end{proof}
+
+\begin{theorem}
+    Every completely metrizable space is Baire. 
+\end{theorem}
+
+\begin{definition}
+    A set $A \subseteq X$ is \emph{nowhere dense} if it is not dense in any nonempty open set of $X$. 
+    i.e iff 
+    $$\overline{A} \quad \text{ has empty interior}$$
+\end{definition}
+
+\begin{example}
+    \begin{itemize}
+        \item In $\R$: Finite sets, $\Z$ are nowhere dense. 
+        \item In $\R^2$: Finite sets, Lattices, most curves. Plane filling curves are not. 
+        \item $A \subseteq X$ open or closed, then $\paratial A$ nowhere dense. 
+        \item $A$ is nowhere dense $\implies$ $\overline{A}$ is nowhere dense. 
+        \item $A, B$ nowhere dense $\implies$ $A \cap B$ nowhere dense. 
+    \end{itemize}
+\end{example}
+
+\begin{proposition}
+    $A \subseteq X$ is nowhere dense iff $X \setminus A$ has a dense interior. 
+\end{proposition}
+
+\begin{proof}
+    $\overline{A}$ has empty interior iff $X \setminus \overline{A}$ is dense.  
+\end{proof}
+
+\begin{definition}
+    \begin{itemize}
+        \item A \emph{Meagre set} is a countable union of nowhere dense sets. 
+        \item A \emph{Residual set} is a countable intersection of sets with dense interiors. 
+    \end{itemize}
+    Hence 
+    $$A \text{ meagre} \iff X \setminus A \text{ residual}$$1
+\end{definition}
+
+\begin{proposition}
+    \begin{itemize}
+        \item The countable intersection of residual sets is residual. 
+        \item The countable union of Meagre sets is Meagre. 
+    \end{itemize}
+\end{proposition}
+
+\begin{theorem}
+    There exists a continuous function $h \colon [0,1] \to \R$ is nowhere differentiable. Moreover, a "generic" $h \in C([0,1], \R)$ has 
+    this property. 
+\end{theorem}
+
+\begin{proposition}
+    $C([0,1], \R)$ with the uniform metric is complete; and hence $C([0,1], \R)$ is Baire. 
+\end{proposition}
+
+\begin{proof}
+    Let $f_1, f_2, \cdots \in C([0,1], \R)$ be a Cauchy sequence, i.e $\forall \varepsilon > 0, \ \exists n_0, \ \forall n, m \geq n_0$ we have 
+    $$d(f_n, f_m) < \varepsilon \implies \forall x \in [0,1], \ |f_n(x) - f_m(x)| < \varepsilon$$
+    Therefore for each fixed $x$, $f_n(x)$ is a Cauchy sequence in $\R$ (which is complete); define 
+    $$f(x) := \lim_{n \to \infty} f_n(x)$$
+    This limit is uniform, hence by the uniform limit theorem 
+    $$f \in C([0,1], \R)$$
+\end{proof}
+
+\begin{proof}[Proof of the theorem]
+    \mbox{}\\
+    We construct $D_1, D_2, \cdots \subseteq C([0,1], \R)$ s.t 
+    \begin{enumerate}
+        \item $\forall n \in \N, \ D_n \text{ is open}$ 
+        \item $\forall n \in \N, \ D_n \text{ is dense}$ 
+        \item $\forall h \in \bigcap_{n=1}^\infty D_n$ is nowhere differentiable. 
+    \end{enumerate}    
+    Therefore $\bigcap_{n=1}^\infty D_n$ is residual and consists of nowhere differentiable functions. 
+    
+    Indeed: 
+    $$D_n := \set{f \in C([0,1], \R) \colon \forall x \in [0,1], \ \exists s \in [-1/n,1/n] \setminus \set{0} \text{ s.t } \left|\frac{f(x+s) - f(x)}{s}\right| > n}$$
+    Clearly we have that $\bigcap_{n \in \N} D_n$ is nowhere differentiable. Moreover, to show that $D_n$ is open, we will show that $D_n^c$ is closed: Let $f_1, f_2, \cdots \to f$ be a 
+    convergent sequence of function in $D_n^c$, we show that $f \in D_n^c$. Since $f_m \not\in D_n$ then $\exists x_m \in [0,1]$ s.t $\forall s \in (-1/n,1/n) \setminus \set{0}$ we have 
+    $$\left|\frac{f(x+s) - f(x)}{s}\right| \leq n$$
+    Wlog we can assume that $x_m$ converges to $x$, since $[0,1]$ is compact. Exercise, show that 
+    $$f_m(x_m) \to f(x)$$
+    $$f_m(x_m + s) \to f(x+s)$$
+    Hence $\left|\frac{f(x+s) - f(x)}{s}\right| = \lim_{m \to \infty} \left|\frac{f_m(x+s) - f_m(x)}{s}\right| \leq n$. Hence 
+    $$f \not\in D_n$$
+    To show that $D_n$ is dense, we will show that for any $f \in C([0,1], \R)$ and any $\varepsilon > 0$ there exists some $g \in D_n$ s.t $d(f,g) < \varepsilon$. 
+    Take such an $f$: 
+    \begin{enumerate}
+        \item Pick some polynomial $p$ s.t $d(f, p) < \varepsilon/2$ (exists by Weirestrass approximation theorem). 
+        \item Define 
+        $$u := \varepsilon/2 \sin \left(\omega_n x \right) \quad \omega_n \text{ to be determined}$$
+        Let $g(x) = p(x) + u(x)$ continuous.\\ 
+        Notice that 
+        $$d(f, g) \leq d(f,p) + d(p, p+u) = d(f, p) + d(0,u) < \varepsilon/2 + \varepsilon/2 = \varepsilon$$
+        Let $M := \sup_{x \in [0,1]} |p'(x)|$ (the max slope). Moreover, $\forall x \in [0,1]$, $\exists s \in (-2\pi / \omega_n, 2\pi/\omega_n)$ s.t 
+        $$\left|u(x+s) - u(x)\right| \geq \varepsilon/2$$
+        Hence by the triangle inequality 
+        $$|g(x+s) - g(x)| \geq |u(x+s) - u(x)| - |p(x+s) - p(s)| \geq \varepsilon/2 - s M$$
+        Therefore 
+        $$\left|\frac{g(x+s) - g(x)}{s}\right| \geq \left|\frac{u(x+s) - u(x)}{s}\right| - M \geq \frac{\varepsilon \omega_n}{4\pi} - M$$
+        Hence choose $\omega_n$ s.t 
+        $$\frac{\varepsilon \omega_n}{4\pi} - M > n$$
+        This gives us that $g \in D_n$
+    \end{enumerate}
+\end{proof}
+
+\begin{theorem}
+    Let $f \colon \R \to \R$ be continuous and $c \in \R$. Suppose that $\forall q > 0$ we have that 
+    $$\lim_{n \to \infty} f(nq) = c$$
+    Then we get that 
+    $$\lim_{x \to \infty} f(x) = c$$ 
+\end{theorem}
+
+\begin{proof}
+    Fix $\varepsilon>0$ we want to show that $\exists M$ s.t $\forall x \geq M$ we have 
+    $$|f(x) - c| \leq \varepsilon$$
+    We know that $\forall q > 0$ there exists an $n_q$ s.t $\forall n \geq n_q$ we have that 
+    $$|f(nq) - c| \leq \varepsilon$$
+    i.e $\forall q > 0$ there exists an $m_q$ s.t $\forall n > m / q$ we have 
+    $$|f(nq) - c| \leq \varepsilon$$
+    For $m \in \N$, define 
+    $$E_m := \set{q > 0 \colon \forall n > m /q \ |f(nq) - c| \leq \varepsilon}$$
+    Note: $E_m$ is closed in $(0, \infty)$ since 
+    $$E_m = \bigcap_{n \in \N} \set{q > 0, \ q \leq m/n \text{ or } |f(nq) - c| \leq \varepsilon}$$
+    By assumption we have that 
+    $$\bigcup_{m=1}^\infty E_m = (0, \infty)$$
+    Note: $(0, \infty)$ is a Baire space (Homeomorphic to $\R$) and clearly $(0, \infty)$ is open in $(0, \infty)$. 
+    Therefore by Baire's theorem, not every $E_m$ is nowhere dense. Hence $\exists m_0$ s.t 
+    $$\overline{E_{m_0}} = E_{m_0} \supseteq [q_1, q_2] \ q_2 > q_1 > 0$$
+    Hence we have that $\forall q \in (q_1, q_2)$ and $\forall n > m_0/q$ 
+    $$|f(nq) - c| \leq \varepsilon$$
+    i.e $\forall x = nq > m_0$ for some $q \in (q_1, q_2)$ we have 
+    $$|f(x) - c| \leq \varepsilon$$
+\end{proof} 
+
+\subsection{Lebesgue covering dimension} 
+\begin{definition}
+    Let $\mathcal{C}$ be an open cover, the \emph{ply} of $\mathcal{C}$ at $x \in X$ is the cardinality of the set of elements of $\mathcal{C}$ containing $X$. 
+
+    The \emph{ply} of $\mathcal{C}$ is the maximum ply among all $x \in X$. 
+\end{definition}
+
+\paragraph{Question.} What is the minimum ply among all covers of $\R^n$ with open balls of radius $1$? 
+\begin{itemize}
+    \item $n = 1$: We get $2$. 
+    \item $n = 2$: We get $3$. 
+    \item $\vdots$
+\end{itemize}
+
+\begin{definition}
+    A \emph{refinement} of an open cover $\mathcal{C}$ is an open cover $\mathcal{D}$ s.t $\forall C \in \mathcal{D}$ we have that $C \in \mathcal{C}$
+\end{definition}
+
+\begin{definition}[Lebsegue covering dimension]
+    The \emph{covering dimension} of a space $X$ is the smallest $n \in \N$ s.t every cover $\mathcal{C}$ of $X$ has a refinement of ply $n+1$.  
+\end{definition}
+
+\begin{example} [Trivial examples]
+    \mbox{}\\
+    \begin{itemize}
+        \item $\operatorname{dim} \varnothing = -1$ 
+        \item $\operatorname{dim} \set{x} = 0$ 
+    \end{itemize}
+\end{example}
+
+\begin{proposition}
+    Let $X$ be a compact metric space and $m \in \N$  and suppose that $\forall \varepsilon > 0$, $\exists \mathcal{D}_\varepsilon$ an open cover of $X$ with 
+    ply $\leq m+1$ whose elements have diameter $< \varepsilon$.  \\
+    Therefore $\operatorname{dim} (X) \leq m$. 
+\end{proposition}
+
+\begin{proposition}
+    Let $Y$ be a closed subspace of $X$, then $\operatorname{dim} (Y) \leq \operatorname{dim} (X)$. 
+\end{proposition}
+
+\begin{proposition}
+    $\operatorname{dim} (X \times Y) \leq \operatorname{dim} X + \operatorname{dim} Y$.
+\end{proposition}
+
+\begin{theorem}
+    Let $X$ be a compact metric space then the following are all equivalent: 
+    \begin{enumerate}
+        \item $X$ is zero-dimensional 
+        \item $X$ has basis consisting of clopen sets
+        \item Every distinct pair of points can be separated by clopen sets
+        \item $X$ is totally disconnected
+    \end{enumerate}
+\end{theorem}
+
+\begin{theorem}
+    Every compact metric metric space with finite dimension $m$ can be embedded into $\R^{2m+1}$
+\end{theorem}
+
+\end{document} 
